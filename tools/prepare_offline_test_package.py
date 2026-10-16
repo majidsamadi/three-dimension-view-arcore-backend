@@ -7,11 +7,14 @@ are always outside the Git checkout. All command invocations use argv arrays.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import re
 import subprocess
 import sys
+
+H_TOOL_SHA256 = "2ca1cd8c27123f7417a477de135cce10b853480c966ca2b0a5ce2eba82c84bb3"
 
 SOURCE_PATHS = (
     "tools/run_boundary_tests.py",
@@ -71,7 +74,10 @@ def prepare(checkout: Path, output: Path, expected_commit: str) -> tuple[Path, P
 
 
 def invoke(checkout: Path, packager: Path, spec: Path, receipt: Path, package: Path) -> int:
-    command = [sys.executable, "-B", str(packager.resolve(strict=True)),
+    exact_tool = packager.resolve(strict=True)
+    if hashlib.sha256(exact_tool.read_bytes()).hexdigest() != H_TOOL_SHA256:
+        raise ValueError("H packaging tool SHA-256 does not match the exact pinned source")
+    command = [sys.executable, "-B", str(exact_tool),
                "--checkout", str(checkout.resolve(strict=True)),
                "--spec", str(spec), "--receipt", str(receipt),
                "--package", str(package), "--timeout-seconds", "60"]

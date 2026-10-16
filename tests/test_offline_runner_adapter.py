@@ -6,7 +6,7 @@ from pathlib import Path
 import unittest
 
 from tools.run_boundary_tests import ObservedResults, encode_junit, write_outputs
-from tools.prepare_offline_test_package import source_spec, outside_checkout
+from tools.prepare_offline_test_package import source_spec, outside_checkout, prepare, invoke
 
 
 class OfflineRunnerAdapterTests(unittest.TestCase):
@@ -38,6 +38,33 @@ class OfflineRunnerAdapterTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 outside_checkout(work, work / "evidence")
 
+
+    def test_wrong_complete_checkout_pin_is_rejected_before_writing_spec(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as tmp:
+            checkout = Path(tmp) / "checkout"
+            checkout.mkdir()
+            output = Path(tmp) / "outside"
+            with patch("tools.prepare_offline_test_package.current_head", return_value="a" * 40):
+                with self.assertRaisesRegex(ValueError, "HEAD differs"):
+                    prepare(checkout, output, "b" * 40)
+            self.assertFalse(output.exists())
+
+    def test_wrong_h_tool_hash_is_refused_before_execution(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            wrong = Path(tmp) / "wrong_h_checker.py"
+            wrong.write_text("print('not the pinned H tool')\n")
+            with self.assertRaisesRegex(ValueError, "SHA-256"):
+                invoke(Path(tmp), wrong, Path(tmp) / "spec.json",
+                       Path(tmp) / "out.json", Path(tmp) / "out.zip")
+            self.assertFalse((Path(tmp) / "out.json").exists())
+            self.assertFalse((Path(tmp) / "out.zip").exists())
+
+    def test_zero_tests_cannot_create_fabricated_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(ValueError):
+                write_outputs(ObservedResults(), Path(tmp))
+            self.assertFalse((Path(tmp) / "junit.xml").exists())
 
 if __name__ == "__main__":
     unittest.main()
