@@ -40,6 +40,8 @@ class ActionAdapter:
             decision=ActionDecision.ALLOW,
             user_id=actor.user_id,
             application_id=actor.application_id,
+            organization_id=actor.organization_id,
+            relationship_id=actor.relationship_id,
             scene_id=self.reference.scene_id,
             scene_revision=self.reference.scene_revision,
             property_id=self.reference.property_id,

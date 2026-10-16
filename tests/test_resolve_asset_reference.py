@@ -36,6 +36,8 @@ def action_fact(
     decision: ActionDecision | None = ActionDecision.ALLOW,
     user_id: str | None = ACTOR.user_id,
     application_id: str | None = ACTOR.application_id,
+    organization_id: str | None = ACTOR.organization_id,
+    relationship_id: str | None = ACTOR.relationship_id,
     scene_id: str | None = REF.scene_id,
     scene_revision: str | None = REF.scene_revision,
     property_id: str | None = REF.property_id,
@@ -46,6 +48,8 @@ def action_fact(
         decision=decision,
         user_id=user_id,
         application_id=application_id,
+        organization_id=organization_id,
+        relationship_id=relationship_id,
         scene_id=scene_id,
         scene_revision=scene_revision,
         property_id=property_id,
@@ -158,6 +162,93 @@ class HomeReferenceResolverTests(unittest.TestCase):
                 REF, ReferenceAction.VIEW_REFERENCE
             )
 
+
+    def test_exact_organization_and_relationship_scope_matches(self):
+        actor = ActorContext("USER-A", "home-scanner-web", "SYN-ORG-A", "SYN-REL-A")
+        scope_fact = action_fact(organization_id="SYN-ORG-A", relationship_id="SYN-REL-A")
+        result = resolver(
+            identity=IdentityFact(IdentityFactStatus.CURRENT, actor),
+            authority=scope_fact,
+        ).resolve(REF, ReferenceAction.READ_METADATA)
+        self.assertEqual(result.actor, actor)
+
+    def test_same_allow_fact_cannot_cross_to_other_organization(self):
+        fact = action_fact(organization_id="SYN-ORG-A")
+        for organization_id, expected in (("SYN-ORG-A", True), ("SYN-ORG-B", False)):
+            with self.subTest(organization_id=organization_id):
+                actor = ActorContext("USER-A", "home-scanner-web", organization_id)
+                test_resolver = resolver(identity=IdentityFact(IdentityFactStatus.CURRENT, actor), authority=fact)
+                if expected:
+                    self.assertEqual(test_resolver.resolve(REF, ReferenceAction.READ_METADATA).actor, actor)
+                else:
+                    with self.assertRaises(StaleAuthorityFact):
+                        test_resolver.resolve(REF, ReferenceAction.READ_METADATA)
+
+    def test_explicit_personal_fact_matches_explicit_personal_actor(self):
+        actor = ActorContext("USER-A", "home-scanner-web", None, None)
+        result = resolver(identity=IdentityFact(IdentityFactStatus.CURRENT, actor),
+                          authority=action_fact(organization_id=None, relationship_id=None)).resolve(
+                              REF, ReferenceAction.READ_METADATA)
+        self.assertEqual(result.actor.organization_id, None)
+        self.assertEqual(result.actor.relationship_id, None)
+
+    def test_personal_fact_cannot_authorize_organization_actor(self):
+        actor = ActorContext("USER-A", "home-scanner-web", "SYN-ORG-A")
+        with self.assertRaises(StaleAuthorityFact):
+            resolver(identity=IdentityFact(IdentityFactStatus.CURRENT, actor),
+                     authority=action_fact(organization_id=None)).resolve(
+                         REF, ReferenceAction.READ_METADATA)
+
+    def test_organization_fact_cannot_authorize_personal_actor(self):
+        with self.assertRaises(StaleAuthorityFact):
+            resolver(authority=action_fact(organization_id="SYN-ORG-A")).resolve(
+                REF, ReferenceAction.READ_METADATA)
+
+    def test_changed_relationship_cannot_reuse_allow_fact(self):
+        fact = action_fact(organization_id="SYN-ORG-A", relationship_id="SYN-REL-A")
+        actor = ActorContext("USER-A", "home-scanner-web", "SYN-ORG-A", "SYN-REL-B")
+        with self.assertRaises(StaleAuthorityFact):
+            resolver(identity=IdentityFact(IdentityFactStatus.CURRENT, actor),
+                     authority=fact).resolve(REF, ReferenceAction.READ_METADATA)
+
+    def test_relationship_and_no_relationship_are_not_equivalent(self):
+        actor = ActorContext("USER-A", "home-scanner-web", "SYN-ORG-A", "SYN-REL-A")
+        with self.assertRaises(StaleAuthorityFact):
+            resolver(identity=IdentityFact(IdentityFactStatus.CURRENT, actor),
+                     authority=action_fact(organization_id="SYN-ORG-A", relationship_id=None)).resolve(
+                         REF, ReferenceAction.READ_METADATA)
+
+    def test_current_identity_without_context_is_unavailable(self):
+        with self.assertRaises(DependencyUnavailable):
+            resolver(identity=IdentityFact(IdentityFactStatus.CURRENT, None)).resolve(
+                REF, ReferenceAction.READ_METADATA)
+
+    def test_incomplete_authority_missing_organization_binding_is_unavailable(self):
+        from types import SimpleNamespace
+        full = action_fact()
+        old_adapter_fact = SimpleNamespace(**{
+            name: getattr(full, name) for name in full.__dataclass_fields__
+            if name != "organization_id"
+        })
+        with self.assertRaises(DependencyUnavailable):
+            resolver(authority=old_adapter_fact).resolve(REF, ReferenceAction.READ_METADATA)
+
+    def test_incomplete_authority_missing_relationship_binding_is_unavailable(self):
+        from types import SimpleNamespace
+        full = action_fact()
+        old_adapter_fact = SimpleNamespace(**{
+            name: getattr(full, name) for name in full.__dataclass_fields__
+            if name != "relationship_id"
+        })
+        with self.assertRaises(DependencyUnavailable):
+            resolver(authority=old_adapter_fact).resolve(REF, ReferenceAction.READ_METADATA)
+
+    def test_incomplete_action_decision_remains_unavailable_under_org_context(self):
+        actor = ActorContext("USER-A", "home-scanner-web", "SYN-ORG-A")
+        with self.assertRaises(DependencyUnavailable):
+            resolver(identity=IdentityFact(IdentityFactStatus.CURRENT, actor),
+                     authority=action_fact(organization_id="SYN-ORG-A", decision=None)).resolve(
+                         REF, ReferenceAction.READ_METADATA)
 
 if __name__ == "__main__":
     unittest.main()

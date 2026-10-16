@@ -103,10 +103,20 @@ class CurrentActionFact:
     decision: ActionDecision | None
     user_id: str | None
     application_id: str | None
+    # Required constructor fields: None is explicitly attested personal/no-relationship
+    # scope; omission or unavailable scope must never silently use None.
+    organization_id: str | None
+    relationship_id: str | None
     scene_id: str | None
     scene_revision: str | None
     property_id: str | None
     action: ReferenceAction | None
+
+    def __post_init__(self) -> None:
+        if self.organization_id is not None:
+            _required(self.organization_id, "organization_id")
+        if self.relationship_id is not None:
+            _required(self.relationship_id, "relationship_id")
 
 
 @dataclass(frozen=True, slots=True)
