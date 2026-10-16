@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -32,10 +33,21 @@ SOURCE_PATHS = (
 
 
 def outside_checkout(checkout: Path, candidate: Path) -> Path:
-    resolved = candidate.resolve()
-    if resolved == checkout or checkout in resolved.parents:
-        raise ValueError("package/spec/receipt must be outside checkout")
-    return resolved
+    # Compare both the lexical locations and the resolved filesystem targets.
+    # The former refuses checkout-local symlinks pointing outwards; the latter
+    # refuses aliased ancestors/children pointing back inside the checkout.
+    # Missing output leaves are allowed; existing symlink ancestors resolve.
+    actual_checkout = checkout.resolve(strict=True)
+    actual_candidate = candidate.resolve(strict=False)
+    lexical_checkout = Path(os.path.abspath(checkout))
+    lexical_candidate = Path(os.path.abspath(candidate))
+    for source_root, output_path in (
+        (actual_checkout, actual_candidate),
+        (lexical_checkout, lexical_candidate),
+    ):
+        if output_path == source_root or source_root in output_path.parents:
+            raise ValueError("package/spec/receipt must be outside checkout")
+    return actual_candidate
 
 
 def source_spec(commit: str) -> dict:
