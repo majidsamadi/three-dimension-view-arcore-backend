@@ -1,0 +1,84 @@
+{
+  "fixture_id": "B-RFX-08",
+  "kind": "independently prepared semantic/review examples; not deployed data/API schema",
+  "b_case_ids": [
+    "B-P03-01",
+    "B-P03-07",
+    "B-P03-18",
+    "B-P03-20"
+  ],
+  "reviewers_requested": [
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G"
+  ],
+  "source": "Retained B v0.1 and coordinator-relayed summaries from this cycle",
+  "status": "PREPARED_NOT_EXECUTED_NOT_ACCEPTED",
+  "coordinate_convention": null,
+  "codec": null,
+  "protection_scheme": null,
+  "physical_measurement_receipts": [],
+  "examples": [
+    {
+      "example": "four registrations unselected",
+      "products": [
+        {
+          "label": "Home Scanner",
+          "application_identifier": null,
+          "origin": null,
+          "callback": null,
+          "environment": null
+        },
+        {
+          "label": "Object Scanner",
+          "application_identifier": null,
+          "origin": null,
+          "callback": null,
+          "environment": null
+        },
+        {
+          "label": "Composer",
+          "application_identifier": null,
+          "origin": null,
+          "callback": null,
+          "environment": null
+        },
+        {
+          "label": "Finder",
+          "application_identifier": null,
+          "origin": null,
+          "callback": null,
+          "environment": null
+        }
+      ],
+      "draft_expected": "Names are descriptive labels, not registered IDs. W/C decision is unset."
+    },
+    {
+      "example": "relayed capacity mismatch",
+      "existing_count_relayed": 9,
+      "proposed_count_relayed": 4,
+      "umw_limit_relayed": 10,
+      "source_sha": null,
+      "draft_expected": "Prepare 9/10/13-count parser cases; do not remove existing registrations. No actual parser test executed here."
+    },
+    {
+      "example": "unqualified bulk proxy",
+      "request_limit_relayed_bytes": 2000000,
+      "response_limit_relayed_bytes": 4000000,
+      "qualified_asset_path": null,
+      "draft_expected": "No asset-upload route chosen from these reported limits."
+    },
+    {
+      "example": "two first-party entry options",
+      "options": [
+        "W website-session extension",
+        "C confidential-consumer integration"
+      ],
+      "selected": null,
+      "draft_expected": "Preserve relayed wisestay.sso-session.v1; no new issuer or full-external-onboarding dependency on P03."
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "fixture_id": "B-RFX-07",
+  "kind": "independently prepared semantic/review examples; not deployed data/API schema",
+  "b_case_ids": [
+    "B-P03-06",
+    "B-P03-15",
+    "B-P03-16"
+  ],
+  "reviewers_requested": [
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+  ],
+  "source": "Retained B v0.1 and coordinator-relayed summaries from this cycle",
+  "status": "PREPARED_NOT_EXECUTED_NOT_ACCEPTED",
+  "coordinate_convention": null,
+  "codec": null,
+  "protection_scheme": null,
+  "physical_measurement_receipts": [],
+  "examples": [
+    {
+      "example": "device loss while opening exact asset",
+      "asset": "H-A@7",
+      "new_gpu_context": null,
+      "draft_expected": "Expose renderer loss; no alternate access, silent backend switch or capture restart."
+    },
+    {
+      "example": "capturing phone offline versus second viewer",
+      "capturing_phone_network": "offline",
+      "second_viewer_network": "online",
+      "draft_expected": "Valid later two-account proof shape; no offline second-viewer support inferred."
+    },
+    {
+      "example": "exact target missing alignment",
+      "map": "MAP-A@5",
+      "target_map": "MAP-A@4",
+      "alignment": null,
+      "draft_expected": "Authorized text alternative; no fabricated marker or actual-user position."
+    }
+  ]
+}

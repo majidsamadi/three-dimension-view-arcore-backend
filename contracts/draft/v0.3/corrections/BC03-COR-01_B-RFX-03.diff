@@ -1,0 +1,81 @@
+--- original/B-RFX-03_version-component.json
++++ revised/B-RFX-03_version-component.v0.2.json
+@@ -30,7 +30,20 @@
+       "received_labels": [
+         "PART-A"
+       ],
+-      "draft_expected": "Refuse incomplete declared set; preserve existing accepted V1."
++      "draft_expected": "A delivered copy claiming V1 with required PART-B missing cannot open. Preserve the complete accepted source V1 and its original identity/history; do not call the incomplete copy an accepted V1. Do not repair it with V2 geometry/appearance, mix revisions, rename a version label, or infer new audience/action permission.",
++      "input_role": "Delivered copy claiming accepted V1; not the accepted source record itself.",
++      "accepted_source": {
++        "fixture_set": "V1",
++        "required_labels": [
++          "PART-A",
++          "PART-B"
++        ],
++        "present_labels": [
++          "PART-A",
++          "PART-B"
++        ],
++        "meaning": "Hypothetical complete accepted source V1 retained unchanged; not a real accepted asset receipt."
++      }
+     },
+     {
+       "example": "foreign revision",
+@@ -44,6 +57,55 @@
+       "new_map": "MAP-A@5",
+       "correction_evidence": null,
+       "draft_expected": "Revalidate original occurrence/shelf/comment anchors without inventing a transform."
++    },
++    {
++      "example": "incomplete candidate V2 while accepted complete V1 remains unchanged",
++      "input_role": "New candidate V2; distinct from the accepted source V1 and from an incomplete delivered copy of V1.",
++      "accepted_source": {
++        "fixture_set": "V1",
++        "required_labels": [
++          "PART-A",
++          "PART-B"
++        ],
++        "present_labels": [
++          "PART-A",
++          "PART-B"
++        ]
++      },
++      "candidate": {
++        "fixture_set": "V2",
++        "required_labels": [
++          "PART-A",
++          "PART-B"
++        ],
++        "received_labels": [
++          "PART-A"
++        ]
++      },
++      "draft_expected": "V2 is incomplete and cannot be accepted/published as its declared complete version. Keep the accepted complete V1, its coherent components and history unchanged. Do not substitute V2 parts into V1, relabel V2 as V1, or update saved design/shelf/comment references. Any V1 opening still requires its own matching delivered set and current applicable authority.",
++      "limits": "Opaque PART labels are not selected geometry/appearance types, codecs, containers, integrity encodings or custody. All acceptance states here are hypothetical semantic givens, not executed acceptance."
+     }
+-  ]
++  ],
++  "fixture_revision": "0.2",
++  "revises": {
++    "fixture_id": "B-RFX-03",
++    "predecessor_internal_revision": null,
++    "predecessor_revision_note": "The original fixture has no internal revision field; it was delivered in the v0.1 reconciliation packet. Do not retroactively insert an original version.",
++    "predecessor_packet": "WiseStay_Team_B_P03_Reconciliation_and_WG02_v0.1.zip",
++    "predecessor_packet_sha256": "31ac8ed5a9962974fd20acd706a685a3ca6350682d9678f15f649d4fc5418f92",
++    "predecessor_member": "WiseStay_Team_B_Cycle3/fixtures/B-RFX-03_version-component.json",
++    "predecessor_sha256": "62b01afb987ae6ff2453d7ebb4c7635b84d2cf2624b988457b2d4dda3e6e7d92",
++    "correction_id": "BC03-COR-01",
++    "delta_id": "DELTA-17",
++    "receipt_id": "C-HANDOVER-03",
++    "receipt_agent_message_id": "fbe47384-0240-4032-a1e4-c9ed0741bed5",
++    "reviewed_shared_handover_sha256": "a1eb6e0359a4ae3c2aa2f99056d6e2383ddf01691be5ff5d6f08480ce7f02980"
++  },
++  "receipt_scope": {
++    "prior_C_receipt": "Foreign-revision and map examples accepted-for-contract-review at the predecessor fixture body. Missing-component wording correction requested.",
++    "revised_example_0_C_review": "PENDING",
++    "new_example_3_C_review": "PENDING",
++    "whole_fixture_contract_acceptance": null,
++    "runtime_execution": false
++  }
+ }

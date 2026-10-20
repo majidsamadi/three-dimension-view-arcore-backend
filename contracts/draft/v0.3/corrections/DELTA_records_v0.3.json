@@ -1,0 +1,333 @@
+[
+  {
+    "id": "DELTA-01",
+    "title": "Lifecycle ordering",
+    "proposed_wording": "A state event reports a transition request/state, not by itself completed cleanup. Define the completion boundary for every successful pause, duplicate pause, resume, stop and cancel call. Specify whether conflicting calls serialize or reject and whether a pending frame drains/commits or is discarded with explicit engine-state consequences. The WG02 traces characterize the old runtime; neither alternative is selected.",
+    "wbs_subtasks": [
+      "ARC-02.1"
+    ],
+    "decision_context": [
+      "Q01"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-02",
+    "title": "Durability and operation identity",
+    "proposed_wording": "Keep local capture finalization, protected checkpoint persistence, native-to-app transfer, selected service upload, validation, review and publication distinct. Record the original operation/resource/version and whether each effect is pending, durably accepted or uncertain. Cancellation neither proves rollback/deletion nor cancels a different remote operation. A store.put already entered may finish after stop/cancel; define how its scoped receipt is settled/reconciled. Never fabricate a new operation to hide lost acknowledgement.",
+    "wbs_subtasks": [
+      "ARC-02.1",
+      "ARC-07.2"
+    ],
+    "decision_context": [
+      "Q01",
+      "Q05"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-03",
+    "title": "Context changes",
+    "proposed_wording": "Bind pending callbacks and receipts to the original account/application/organization/resource and application property/workspace/shop context. On a context change, old geometry, labels and callbacks cannot be applied to the new context. A legitimate old-context durable receipt remains distinct from permission to display its contents. Require reviewed immutable-scope and host-generation behavior; do not mutate an in-flight RuntimeOptions object to implement SSO or a property switch.",
+    "wbs_subtasks": [
+      "ARC-02.1",
+      "ARC-08.1"
+    ],
+    "decision_context": [
+      "Q01"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-04",
+    "title": "Authority and canonical association",
+    "proposed_wording": "Local project names and engine correlation IDs are not canonical people/properties/assets. Define the reviewed mapping for locally unbound capture without silently requiring online admission; canonical association is deliberate and revalidated at the relevant service boundary. Independent personal objects do not require a property. Non-bookable shops and addressless non-IoT research authoring remain unqualified until the applicable registry decision; do not invent booking/IoT authority or a second master.",
+    "wbs_subtasks": [
+      "ARC-02.2",
+      "ARC-07.2"
+    ],
+    "decision_context": [
+      "Q01",
+      "Q06",
+      "P02/Q14"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-05",
+    "title": "Scale and frame evidence",
+    "proposed_wording": "Preserve home and object scale independently. A known-size object does not make an unknown-scale home metric, and vice versa. Keep unknown/estimated/seller-declared/reference-supported/independently verified claims distinguishable without finalizing their serialization. Carry units, orientation, reference points, per-source frame/timebase and transform provenance. Synthetic dimensions and a 'Metres / Y up' label are not physical evidence; select unknown-scale trial/refusal behavior separately.",
+    "wbs_subtasks": [
+      "ARC-06.1",
+      "ARC-02.2",
+      "ARC-07.1",
+      "ARC-07.2"
+    ],
+    "decision_context": [
+      "Q03",
+      "Q05",
+      "Q06"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-06",
+    "title": "Pinned references and correction",
+    "proposed_wording": "Pin scene/object/design/map versions and occurrence identity. Keep independent placement transforms/removal without modifying source assets or stock. A map correction or explicit upgrade requires a versioned relationship and revalidation of design/shelf/comment anchors; ambiguous or absent alignment stays unresolved. Do not infer common origins, synchronization or retained tracking from independently captured or reopened geometry.",
+    "wbs_subtasks": [
+      "ARC-06.1",
+      "ARC-07.2",
+      "ARC-08.1"
+    ],
+    "decision_context": [
+      "Q03",
+      "Q05",
+      "Q06"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-07",
+    "title": "Component and audience bytes",
+    "proposed_wording": "Validate the declared exact version and required component set without changing an already accepted V1. Distinguish incomplete real capture coverage from missing required files. Publication/review concerns the exact approved audience projection bytes; local crop visibility is not byte-level privacy, and no private raw/home/seller material may leak via delivery or backup. Degraded projections need explicit reviewed membership/capability rules.",
+    "wbs_subtasks": [
+      "ARC-07.1",
+      "ARC-07.2",
+      "ARC-08.1"
+    ],
+    "decision_context": [
+      "Q05",
+      "P02/Q07"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-08",
+    "title": "Separate reader/authority profiles",
+    "proposed_wording": "Track native research diagnostics, experimental SDK protected checkpoints, existing Vue archives/imports, and future controlled service assets as distinct profiles. Preserve original readers/signing/keys and data. Two separately atomic native mesh/JSON writes are not a pair transaction. New restricted assets cannot use unrestricted legacy export/backup/debug paths; PNG policy is a separate reviewed question. Missing keys/pair members fail recoverably without deletion or universal substitute keys.",
+    "wbs_subtasks": [
+      "ARC-07.2",
+      "ARC-08.1"
+    ],
+    "decision_context": [
+      "Q05"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-09",
+    "title": "Observation and stock meanings",
+    "proposed_wording": "Separate product family, exact variant, pack/unit, reusable asset, observation, physical-instance hypothesis and design occurrence. Preserve observed/inferred/unseen and fused/separable distinctions. Record observation interval, coverage, quantity basis, association/dedup uncertainty and current reviewed availability separately. Withdrawing an asset or missing/stale/unvisited/partial/unavailable evidence does not prove product absence, zero stock, shortage or theft.",
+    "wbs_subtasks": [
+      "ARC-02.2",
+      "ARC-07.1",
+      "ARC-08.1"
+    ],
+    "decision_context": [
+      "Q06"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-10",
+    "title": "Match vocabulary correction",
+    "proposed_wording": "Retain WFB-05.1/WFA-03.1 exact-confirmed, probable, similar, ambiguous and no-match meanings. Preserve the relayed 'unknown' requirement without silently aliasing it to ambiguous, no-match or provider failure. Request F's examples distinguishing no candidate, multiple unresolved candidates, unknown identity and unavailable provider; decide whether unknown is an additional outcome or a separate identity/evidence dimension. No final enum is selected.",
+    "wbs_subtasks": [
+      "ARC-02.2",
+      "ARC-08.1"
+    ],
+    "decision_context": [
+      "Q06"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-11",
+    "title": "Current rights and restoration",
+    "proposed_wording": "Keep capture, review, publication, view, placement and export authority separate; an SDK identifier/client paid flag is not an issuer. Old T1 metadata restored after T2 withdrawal must not revive current access. Retained commercial rules, an explicitly authorized bounded pilot and deferral of positive commercial actions remain decision options; do not infer free/perpetual use. Negative validation/denial examples can proceed independently.",
+    "wbs_subtasks": [
+      "ARC-07.2",
+      "ARC-08.1"
+    ],
+    "decision_context": [
+      "Q05",
+      "P02/Q07",
+      "P15/Q10"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-12",
+    "title": "Two-account proof boundary",
+    "proposed_wording": "The later same-version two-account test requires the capturing phone to be offline while the authorized second account opens the exact accepted asset. That does not require the second viewer to be offline. An offline second viewer needs its own explicit capability/rights/recovery decision and evidence; no offline duration is inferred.",
+    "wbs_subtasks": [
+      "ARC-07.2",
+      "ARC-08.1"
+    ],
+    "decision_context": [
+      "Q04",
+      "Q05"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-13",
+    "title": "Viewer behavior and honest failure",
+    "proposed_wording": "Bind viewing/selection/focus to the exact authorized asset/occurrence/shop/map/target. Display declared selection precision and uncertainty with authorized text alternatives. Device loss, unsupported rendering, provider failure and missing alignment are distinct; do not gain alternate access, choose an unapproved renderer fallback or fabricate an exact marker/physical position/clearance result.",
+    "wbs_subtasks": [
+      "ARC-08.1",
+      "ARC-07.1"
+    ],
+    "decision_context": [
+      "Q04",
+      "Q05",
+      "Q06"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-14",
+    "title": "Current first-party entry",
+    "proposed_wording": "Consume the existing wisestay.sso-session.v1 boundary once its exact source/configuration is supplied. Website-session extension W and confidential-consumer integration C remain alternatives, not a new OIDC/JWT issuer. Four application identifiers/origins/callbacks/environments are unset. Preserve existing registrations; review the reported catalogue-count and proxy-size gaps without treating them as observed failures or as a bulk-asset design.",
+    "wbs_subtasks": [
+      "ARC-02.1",
+      "ARC-07.2"
+    ],
+    "decision_context": [
+      "Q01",
+      "P07/Q11"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-15",
+    "title": "Deliberate local evidence",
+    "proposed_wording": "Preserve deliberate local capture and explicitly selected upload. Optional raw-input/cloud processing consent cannot become a mandatory local-capture dependency. Diagnostic image sampling, even the relayed up-to-60 set, does not establish a synchronized equal-input replay or physical accuracy. No optional mode is activated.",
+    "wbs_subtasks": [
+      "ARC-02.1",
+      "ARC-02.2",
+      "ARC-06.1"
+    ],
+    "decision_context": [
+      "Q01",
+      "Q03",
+      "Q04"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-16",
+    "title": "Separate later developer proof",
+    "proposed_wording": "Review only minimal first-party prerequisites before P07. Keep full external organization/delegation/onboarding and independent-host proof separate for P35/P37. This reconciliation and its isolated fixtures do not satisfy ARC-02.4 or ARC-02's two-distinct-consumer completion criterion.",
+    "wbs_subtasks": [
+      "ARC-02.1",
+      "ARC-02.2",
+      "ARC-07.2"
+    ],
+    "decision_context": [
+      "P07/Q11",
+      "P35/Q11"
+    ],
+    "status": "PROPOSED_NOT_FROZEN"
+  },
+  {
+    "id": "DELTA-17",
+    "title": "Complete accepted V1, incomplete candidate V2, and incomplete delivered V1",
+    "proposed_wording": "Keep three explicitly different semantic states. Accepted source V1 has its complete required coherent component set. Candidate V2 missing a required V2 component is incomplete and cannot replace or modify accepted V1. A delivered copy claiming V1 but missing a required V1 component cannot open as that asset; the accepted source V1 is not thereby relabelled incomplete or granted new rights. Never fill V1 with V2 geometry/appearance, mix required component revisions, or rename version labels to pass. Matching source history and E/F reference versions remain unchanged. Any separate reduced-capability projection needs its own reviewed membership/capability and audience meaning.",
+    "wbs_subtasks": [
+      "ARC-07.1",
+      "ARC-07.2",
+      "ARC-08.1"
+    ],
+    "decision_context": [
+      "Q05"
+    ],
+    "status": "PROPOSED_NOT_FROZEN",
+    "basis": [
+      "C-EX-03/R1",
+      "C-HANDOVER-03 B-RFX-03 correction"
+    ],
+    "correction_id": "BC03-COR-01"
+  },
+  {
+    "id": "DELTA-18",
+    "title": "Original owner/stage/scope reconciliation without selecting settlement policy",
+    "proposed_wording": "Carry explicit original owner, stage and scope across local session/epoch, local checkpoint, native-to-app transfer, backend capture, selected transfer/recovery, immutable asset version, review/publication and current grant. Status evolution is not an asset-version change. Reconcile a lost acknowledgement using its original effect and current authorization; do not create a new asset/Object ID or retry E’s design save as C’s upload. Changed component set, target, selected raw-input consent or expected version under the same repeated operation is conflict rather than duplicate-success. Local stop/cancel, remote cancel request, confirmed remote termination, accepted input and publication are distinct. Preserve whichever durable facts are confirmed and original-scope late receipts; unknown remote acceptance remains unknown. This wording does not select command serialization/rejection, drain/discard/delete, finish mapping or entered-store promise settlement.",
+    "wbs_subtasks": [
+      "ARC-02.1",
+      "ARC-02.2",
+      "ARC-07.2"
+    ],
+    "decision_context": [
+      "Q01",
+      "Q05"
+    ],
+    "status": "PROPOSED_NOT_FROZEN",
+    "basis": [
+      "C-EX-02/R1",
+      "C-EX-02/R2",
+      "C-EX-02/R3",
+      "C-HANDOVER-03 DELTA-02 receipt"
+    ]
+  },
+  {
+    "id": "DELTA-19",
+    "title": "Publication revision and historical receipt are not current use authority",
+    "proposed_wording": "Validation produces no publication. Review binds the exact candidate and audience; publication has its own confirmed revision and original operation under applicable current checks. Asset, publication and design revisions are different. A later H-A@8 publication does not update an E arrangement pinned to H-A@7/O-A@3, its placements/comments, or F’s map/shelf anchors. Lost publication acknowledgement is reconciled against the original publication operation; its historical receipt is not a new/current view, place, export or key-release grant. Object publication, listing association and composition publication retain their separate owning boundaries.",
+    "wbs_subtasks": [
+      "ARC-07.2",
+      "ARC-08.1"
+    ],
+    "decision_context": [
+      "Q05",
+      "Q06",
+      "P02/Q07",
+      "P15/Q10"
+    ],
+    "status": "PROPOSED_NOT_FROZEN",
+    "basis": [
+      "C-EX-04/R1",
+      "C-HANDOVER-03 foreign-revision/map receipts"
+    ]
+  },
+  {
+    "id": "DELTA-20",
+    "title": "Current T2 authority versus restored T1 history",
+    "proposed_wording": "Restoring a T1 publication/grant record after T2 withdrawal preserves permitted historical facts but cannot create a new open, renewal or key release. Current authority governs; unavailable current authority yields an explicit unavailable/reconciliation outcome rather than restored allow. Historical asset/reference preservation is subject to the still-unselected policy and never implies perpetual retention. E retains only permitted restricted history; F cannot infer zero stock or product absence from withdrawal. Do not promise instant erasure or revocation of every previously issued offline/delivery capability. Residual bounds and custody remain undecided.",
+    "wbs_subtasks": [
+      "ARC-07.2",
+      "ARC-08.1"
+    ],
+    "decision_context": [
+      "Q05",
+      "Q08",
+      "P15/Q10"
+    ],
+    "status": "PROPOSED_NOT_FROZEN",
+    "basis": [
+      "C-EX-08/R1",
+      "B-RFX-06 restored metadata example"
+    ]
+  },
+  {
+    "id": "DELTA-21",
+    "title": "Required meanings survive validation and explicit reader mapping",
+    "proposed_wording": "Validation is not verification of unknown scale, seller dimensions, inferred surfaces, ambiguous variants or map/association evidence. Keep home/object/observation/occurrence identities distinct; preserve observation interval, coverage and count basis without interpreting two views as two units or an unvisited region as zero. Retain exact-confirmed/probable/similar/ambiguous/no-match meanings while F’s mapping of unknown remains unresolved; provider/source failure is not a no-match. The experimental validateScene key set and provenance.qualified=false do not define the complete service package. An unsupported required meaning requires explicit reviewed mapping or refusal, not stripping/coercion merely to satisfy the old reader. Audience projection separately excludes private bytes according to its reviewed scope without inventing missing required semantic evidence.",
+    "wbs_subtasks": [
+      "ARC-02.2",
+      "ARC-07.1",
+      "ARC-07.2",
+      "ARC-08.1"
+    ],
+    "decision_context": [
+      "Q03",
+      "Q05",
+      "Q06"
+    ],
+    "status": "PROPOSED_NOT_FROZEN",
+    "basis": [
+      "C-EX-07/R1",
+      "C01-P04-INPUT-02 review/quality/variant evidence"
+    ]
+  }
+]

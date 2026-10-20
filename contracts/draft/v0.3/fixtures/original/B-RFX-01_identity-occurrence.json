@@ -1,0 +1,49 @@
+{
+  "fixture_id": "B-RFX-01",
+  "kind": "independently prepared semantic/review examples; not deployed data/API schema",
+  "b_case_ids": [
+    "B-P03-07",
+    "B-P03-08",
+    "B-P03-12"
+  ],
+  "reviewers_requested": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G"
+  ],
+  "source": "Retained B v0.1 and coordinator-relayed summaries from this cycle",
+  "status": "PREPARED_NOT_EXECUTED_NOT_ACCEPTED",
+  "coordinate_convention": null,
+  "codec": null,
+  "protection_scheme": null,
+  "physical_measurement_receipts": [],
+  "examples": [
+    {
+      "example": "same reusable asset, two occurrences",
+      "home": "H-A@7",
+      "object": "O-A@3",
+      "design": "D-A@2",
+      "occurrences": [
+        "P-A",
+        "P-B"
+      ],
+      "draft_expected": "Remove P-A only; O-A@3 and P-B remain; no stock mutation."
+    },
+    {
+      "example": "personal object without property",
+      "object": "O-PERSONAL@1",
+      "property": null,
+      "draft_expected": "Do not manufacture or require a property to admit the independent object case."
+    },
+    {
+      "example": "local project name is not canonical association",
+      "local_project_label": "Kitchen example",
+      "canonical_property": null,
+      "draft_expected": "Keep unbound status; no invented Resvanta identity or silent online-only capture condition."
+    }
+  ]
+}

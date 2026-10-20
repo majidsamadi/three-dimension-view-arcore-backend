@@ -1,0 +1,63 @@
+{
+  "fixture_id": "B-RFX-05",
+  "kind": "independently prepared semantic/review examples; not deployed data/API schema",
+  "b_case_ids": [
+    "B-P03-09"
+  ],
+  "reviewers_requested": [
+    "A",
+    "B",
+    "C",
+    "F"
+  ],
+  "source": "Retained B v0.1 and coordinator-relayed summaries from this cycle",
+  "status": "PREPARED_NOT_EXECUTED_NOT_ACCEPTED",
+  "coordinate_convention": null,
+  "codec": null,
+  "protection_scheme": null,
+  "physical_measurement_receipts": [],
+  "examples": [
+    {
+      "example": "original WBS result vocabulary",
+      "source_terms": [
+        "exact-confirmed",
+        "probable",
+        "similar",
+        "ambiguous",
+        "no-match"
+      ],
+      "relayed_additional_term": "unknown",
+      "draft_expected": "Mapping is unresolved; unknown does not erase ambiguous or become a provider failure."
+    },
+    {
+      "example": "unknown identity versus provider outage",
+      "identity_evidence": "unknown",
+      "provider_state": "unavailable",
+      "draft_expected": "Keep independent distinctions, not an empty-success/no-match response."
+    },
+    {
+      "example": "same shelf name",
+      "labels": [
+        "Shop-A/MAP-4/Shelf-1",
+        "Shop-B/MAP-4/Shelf-1"
+      ],
+      "draft_expected": "Shop/map/resource identity, not label equality, determines target."
+    },
+    {
+      "example": "withdrawn asset and stock",
+      "asset_state": "withdrawn",
+      "stock_evidence": "unavailable",
+      "draft_expected": "No product-absent or zero-stock inference."
+    },
+    {
+      "example": "two views and hidden backroom",
+      "observations": [
+        "VIEW-A",
+        "VIEW-B"
+      ],
+      "association": "unresolved",
+      "coverage": "backroom unvisited",
+      "draft_expected": "Neither two units nor backroom zero; preserve observation interval/coverage/basis."
+    }
+  ]
+}

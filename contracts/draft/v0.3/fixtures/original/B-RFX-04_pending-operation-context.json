@@ -1,0 +1,51 @@
+{
+  "fixture_id": "B-RFX-04",
+  "kind": "independently prepared semantic/review examples; not deployed data/API schema",
+  "b_case_ids": [
+    "B-P03-03",
+    "B-P03-05",
+    "B-P03-06"
+  ],
+  "reviewers_requested": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G"
+  ],
+  "source": "Retained B v0.1 and coordinator-relayed summaries from this cycle",
+  "status": "PREPARED_NOT_EXECUTED_NOT_ACCEPTED",
+  "coordinate_convention": null,
+  "codec": null,
+  "protection_scheme": null,
+  "physical_measurement_receipts": [],
+  "examples": [
+    {
+      "example": "original operation after lost ack",
+      "operation_label": "OP-A",
+      "repeated_content": "identical",
+      "draft_expected": "Reconcile OP-A; do not mint a new accepted effect."
+    },
+    {
+      "example": "changed repeated content",
+      "operation_label": "OP-A",
+      "repeated_content": "changed",
+      "draft_expected": "Conflict rather than duplicate-success; F partial-commit policy is unset."
+    },
+    {
+      "example": "local versus remote cancellation",
+      "local_operation": "LOCAL-A",
+      "remote_operation": "REMOTE-A",
+      "remote_state": "not supplied",
+      "draft_expected": "Local cancellation does not prove remote termination; retain uncertainty."
+    },
+    {
+      "example": "old scope receipt",
+      "old_scope": "ACCOUNT-A/WORKSPACE-A",
+      "new_scope": "ACCOUNT-B/WORKSPACE-B",
+      "draft_expected": "Do not attach old promise result to new workspace; old durable effect is not deletion."
+    }
+  ]
+}
