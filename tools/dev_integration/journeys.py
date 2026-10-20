@@ -36,7 +36,16 @@ ENVIRONMENT = "dev"
 POOL_ID = "ap-southeast-1_RbRHXUipk"
 ISSUER = f"https://cognito-idp.{REGION}.amazonaws.com/{POOL_ID}"
 CENTRAL_CLIENT_NAME = "wisestay-accounts-dev-web"
-ACCOUNT_CONFIG_URL = "https://user.wizestay.com/api/v1/config"
+# Two-hop public sign-in configuration, the same discovery the Account Centre SPA performs
+# (wisestay-user-management-web src/core/config.ts loadRuntime + src/core/auth.ts initialize):
+# 1. GET https://user.wizestay.com/account-config.json -> apiBaseUrl (the UM API origin);
+# 2. GET <apiBaseUrl>/api/v1/config (wisestay-user-management-backend presentation/api.py,
+#    Settings.public()) -> app_client_id.  The Account Centre edge serves only the
+#    browser-session routes from the API; its /api/v1/config is an S3 403.
+ACCOUNT_WEB_ORIGIN = "https://user.wizestay.com"
+ACCOUNT_RUNTIME_URL = ACCOUNT_WEB_ORIGIN + "/account-config.json"
+ACCOUNT_CONFIG_PATH = "/api/v1/config"
+_CLIENT_ID = re.compile(r"^[-a-zA-Z0-9]{1,128}$")
 SESSION_CONTRACT = "wisestay.web-session.v1"
 REPORT_CONTRACT = "wisestay.3d.dev-integration-report.v1"
 
@@ -438,18 +447,39 @@ def _discover_client_id(ctx: Context, result: Result) -> str:
     if ctx.config.client_id_override:
         result.step("client id", note="from WS3D_IT_CLIENT_ID (non-secret override)")
         return ctx.config.client_id_override
-    try:
-        response = ctx.transport.request("GET", ACCOUNT_CONFIG_URL, {"Accept": "application/json"}, None)
-    except TransportError as exc:
-        result.evidence.add("account centre config", "GET", "user.wizestay.com:/api/v1/config", None, exc.kind)
-        raise Failed(f"ACCOUNT_CONFIG_UNAVAILABLE: {exc.kind}") from None
-    result.evidence.add("account centre config", "GET", "user.wizestay.com:/api/v1/config", response)
+    def fetch(step: str, url: str, template: str) -> HttpResponse:
+        # Public, unauthenticated GETs: no Authorization header ever goes to either hop.
+        try:
+            response = ctx.transport.request("GET", url, {"Accept": "application/json"}, None)
+        except TransportError as exc:
+            result.evidence.add(step, "GET", template, None, exc.kind)
+            raise Failed(f"ACCOUNT_CONFIG_UNAVAILABLE: {step}: {exc.kind}") from None
+        result.evidence.add(step, "GET", template, response)
+        return response
+
+    runtime_response = fetch("account centre runtime config", ACCOUNT_RUNTIME_URL, "user.wizestay.com:/account-config.json")
+    runtime = runtime_response.json_object()
+    require(runtime_response.status == 200 and runtime,
+            f"ACCOUNT_CONFIG_UNAVAILABLE: account-config.json got {runtime_response.status}")
+    require(runtime.get("environment") == ENVIRONMENT and runtime.get("webOrigin") == ACCOUNT_WEB_ORIGIN,
+            "ACCOUNT_CONFIG_ENVIRONMENT_MISMATCH: account-config.json is not the dev Account Centre")
+    require(runtime.get("issuer") == ISSUER, "ACCOUNT_CONFIG_ISSUER_MISMATCH: account-config.json is not the dev pool")
+    api_base = runtime.get("apiBaseUrl")
+    parts = urlsplit(api_base) if isinstance(api_base, str) else None
+    # Same shape rule as the SPA: an https origin with no credentials, path, query or fragment.
+    require(parts is not None and parts.scheme == "https" and bool(parts.hostname) and "@" not in parts.netloc
+            and parts.path in ("", "/") and not parts.query and not parts.fragment,
+            "ACCOUNT_CONFIG_API_BASE_INVALID: apiBaseUrl is not an https origin")
+    response = fetch("account centre config", f"https://{parts.netloc}{ACCOUNT_CONFIG_PATH}",
+                     "um-api:/api/v1/config")
     config = response.json_object()
     client_id = config.get("app_client_id")
-    require(response.status == 200 and isinstance(client_id, str) and client_id,
-            f"ACCOUNT_CONFIG_UNAVAILABLE: got {response.status}")
+    require(response.status == 200 and isinstance(client_id, str) and bool(_CLIENT_ID.fullmatch(client_id)),
+            f"ACCOUNT_CONFIG_UNAVAILABLE: /api/v1/config got {response.status}")
     require(config.get("issuer") == ISSUER, "ACCOUNT_CONFIG_ISSUER_MISMATCH: not the dev pool")
-    result.step("client id", note=f"public Account Centre config ({CENTRAL_CLIENT_NAME})")
+    require(config.get("login_origin") == runtime.get("loginOrigin"),
+            "ACCOUNT_CONFIG_LOGIN_ORIGIN_MISMATCH: API config and account-config.json disagree")
+    result.step("client id", note=f"public Account Centre config via account-config.json apiBaseUrl ({CENTRAL_CLIENT_NAME})")
     return client_id
 
 
