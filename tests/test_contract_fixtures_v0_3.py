@@ -172,7 +172,12 @@ class DraftFixtureStructureTests(unittest.TestCase):
 
 class DraftHomeConsumerTests(unittest.TestCase):
     def test_draft_local_project_label_is_not_a_canonical_property(self):
-        """B-RFX-01 "local project name is not canonical association"."""
+        """B-RFX-01 "local project name is not canonical association".
+
+        None cannot construct a reference; a label resolves only if the
+        authority says so (fake-dependent).  The resolver-side comparison is
+        pinned separately by test_draft_label_mismatch_detected_by_resolver_comparison.
+        """
         ex = FIXTURES.example("B-RFX-01", "local project name is not canonical association")
         self.assertIsNone(ex["canonical_property"])
         with self.assertRaises(ValueError):
@@ -186,6 +191,28 @@ class DraftHomeConsumerTests(unittest.TestCase):
                 HomeResourceFact(ResourceFactStatus.CURRENT, canonical),
                 allow(ACTOR, by_label, ReferenceAction.READ_METADATA),
             ).resolve(by_label, ReferenceAction.READ_METADATA)
+
+    def test_draft_label_mismatch_detected_by_resolver_comparison(self):
+        """B-R1: the resolver's own comparison, not the fake, refuses the label.
+
+        The authority returns the exact scene and revision with a different
+        property_id.  ``HomeReferenceResolver`` raises ``ReferenceMismatch``
+        after the resource lookup and before it ever asks for an action fact.
+        """
+        ex = FIXTURES.example("B-RFX-01", "local project name is not canonical association")
+        by_label = home_ref("H-A@7", ex["local_project_label"])
+        canonical = home_ref("H-A@7")
+        self.assertEqual((canonical.scene_id, canonical.scene_revision),
+                         (by_label.scene_id, by_label.scene_revision))
+        self.assertNotEqual(canonical.property_id, by_label.property_id)
+        facts = RecordingFacts(
+            IdentityFact(IdentityFactStatus.CURRENT, ACTOR),
+            HomeResourceFact(ResourceFactStatus.CURRENT, canonical),
+            allow(ACTOR, by_label, ReferenceAction.READ_METADATA),
+        )
+        with self.assertRaises(ReferenceMismatch):
+            HomeReferenceResolver(facts, facts, facts).resolve(by_label, ReferenceAction.READ_METADATA)
+        self.assertEqual(facts.calls, ["identity", "resource"])
 
     def test_draft_foreign_revision_is_not_substituted(self):
         """B-RFX-03 "foreign revision" (negative: incompatible version)."""
