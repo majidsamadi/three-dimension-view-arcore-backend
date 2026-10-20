@@ -40,6 +40,8 @@ ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github/workflows/dev-integration.yml"
 NOW = datetime(2026, 10, 20, 1, 2, 3, tzinfo=timezone.utc)
 CLIENT_ID = "stubcentralclient0000000000"
+UM_API_HOST = "stubumapi0.execute-api.ap-southeast-1.amazonaws.com"
+LOGIN_ORIGIN = "https://wisestay-dev-511831442607.auth.ap-southeast-1.amazoncognito.com"
 SHA = {site: f"{i}" * 40 for i, site in enumerate(journeys.SITES, start=1)}
 PASSWORDS = {"A": "Synthetic-pass-A-0001", "B": "Synthetic-pass-B-0002"}
 TOTP_SECRETS = {"A": "JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP", "B": "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"}
@@ -338,6 +340,13 @@ class DevStub:
         self.log: list[tuple[str, str]] = []
         self.authorizations: list[str] = []
         self.auth_hosts: set[str] = set()
+        # Shapes served live on 2026-10-20 (non-secret public values; stub client id).
+        self.account_runtime = {"version": 1, "environment": "dev", "webOrigin": "https://user.wizestay.com",
+                                "apiBaseUrl": f"https://{UM_API_HOST}", "issuer": journeys.ISSUER,
+                                "loginOrigin": LOGIN_ORIGIN, "applications": {},
+                                "uploadOrigins": [], "downloadOrigins": []}
+        self.um_config = {"api_version": "1.0.0", "app_client_id": CLIENT_ID, "issuer": journeys.ISSUER,
+                          "login_origin": LOGIN_ORIGIN}
 
     def request(self, method, url, headers, body=None):
         parts = urlsplit(url)
@@ -360,7 +369,14 @@ class DevStub:
         if host == "cognito-idp.ap-southeast-1.amazonaws.com":
             return self.cognito.handle(headers["X-Amz-Target"].split(".")[-1], json.loads(body))
         if host == "user.wizestay.com":
-            return reply(200, {"app_client_id": CLIENT_ID, "issuer": journeys.ISSUER})
+            if parts.path == "/account-config.json":
+                return reply(200, self.account_runtime)
+            # The Account Centre edge proxies only browser-session routes; anything else is S3.
+            return reply(403, b"<Error><Code>AccessDenied</Code></Error>", "application/xml")
+        if host == UM_API_HOST:
+            if parts.path == "/api/v1/config":
+                return reply(200, self.um_config)
+            return reply(404, b"", "application/json")
         if host == "api.github.com":
             return reply(404, {"message": "Not Found"})
         site = next((s for s, spec in journeys.SITES.items() if spec["origin"] == f"https://{host}"), None)
@@ -606,6 +622,47 @@ class JourneyTests(unittest.TestCase):
         t0 = report["tiers"]["T0"]
         self.assertEqual(t0["status"], "blocked")
         self.assertIn("EXPECTED_REVISION_NOT_AVAILABLE", t0["reason"])
+
+    def test_t1_discovers_the_client_id_through_account_config_api_base(self):
+        stub = DevStub()
+        _, report, _ = run_suite(stub)
+        t1 = report["tiers"]["T1"]
+        self.assertEqual(t1["status"], "passed", t1["reason"])
+        config_calls = [url for method, url in stub.log
+                        if urlsplit(url).hostname in ("user.wizestay.com", UM_API_HOST)]
+        self.assertEqual(config_calls, ["https://user.wizestay.com/account-config.json",
+                                        f"https://{UM_API_HOST}/api/v1/config"])
+        self.assertEqual([(e["path"], e["status"]) for e in t1["evidence"][:2]],
+                         [("user.wizestay.com:/account-config.json", 200), ("um-api:/api/v1/config", 200)])
+        self.assertNotIn("user.wizestay.com", stub.auth_hosts)
+        self.assertNotIn(UM_API_HOST, stub.auth_hosts)
+
+    def test_t1_fails_closed_on_untrusted_sign_in_configuration(self):
+        cases = (
+            ("account_runtime", {"issuer": journeys.ISSUER + "x"}, "ACCOUNT_CONFIG_ISSUER_MISMATCH"),
+            ("account_runtime", {"environment": "production"}, "ACCOUNT_CONFIG_ENVIRONMENT_MISMATCH"),
+            ("account_runtime", {"apiBaseUrl": f"http://{UM_API_HOST}"}, "ACCOUNT_CONFIG_API_BASE_INVALID"),
+            ("account_runtime", {"apiBaseUrl": f"https://{UM_API_HOST}/api"}, "ACCOUNT_CONFIG_API_BASE_INVALID"),
+            ("account_runtime", {"apiBaseUrl": f"https://user:pw@{UM_API_HOST}"}, "ACCOUNT_CONFIG_API_BASE_INVALID"),
+            ("um_config", {"issuer": "https://cognito-idp.ap-southeast-1.amazonaws.com/other"},
+             "ACCOUNT_CONFIG_ISSUER_MISMATCH"),
+            ("um_config", {"app_client_id": "x&other=1"}, "ACCOUNT_CONFIG_UNAVAILABLE"),
+            ("um_config", {"login_origin": "https://evil.example"}, "ACCOUNT_CONFIG_LOGIN_ORIGIN_MISMATCH"),
+        )
+        for attribute, change, reason in cases:
+            stub = DevStub()
+            getattr(stub, attribute).update(change)
+            code, report, _ = run_suite(stub)
+            t1 = report["tiers"]["T1"]
+            self.assertEqual((code, t1["status"]), (1, "failed"), (attribute, change))
+            self.assertTrue(t1["reason"].startswith(reason), (change, t1["reason"]))
+            self.assertFalse(stub.cognito.calls, change)
+            self.assertFalse(stub.authorizations, change)
+        stub = DevStub()
+        stub.account_runtime = None  # empty body: not a JSON object
+        _, report, _ = run_suite(stub)
+        self.assertTrue(report["tiers"]["T1"]["reason"].startswith("ACCOUNT_CONFIG_UNAVAILABLE: account-config.json"))
+        self.assertFalse(stub.cognito.calls)
 
     def test_bearer_tokens_go_only_to_the_four_api_hosts(self):
         stub = DevStub()
