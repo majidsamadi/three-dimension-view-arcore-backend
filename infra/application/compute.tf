@@ -9,14 +9,19 @@ data "aws_iam_policy_document" "lambda_trust" {
   }
 }
 
+# Runtime role (wave 3 plan §3.2): fixed path and the INFRA-owned permissions
+# boundary, so the deploy role can only create it inside that boundary.
 resource "aws_iam_role" "api" {
-  name               = "${local.function_name}-role"
-  assume_role_policy = data.aws_iam_policy_document.lambda_trust.json
-  depends_on         = [terraform_data.guard]
+  name                 = local.runtime_role
+  path                 = "/wisestay/3d/dev/"
+  assume_role_policy   = data.aws_iam_policy_document.lambda_trust.json
+  permissions_boundary = var.runtime_permissions_boundary_arn
+  depends_on           = [terraform_data.guard]
 }
 
 # Least privilege (plan X.10): the table and its index, objects in the asset
-# bucket, the single Resvanta credential parameter and this function's logs.
+# bucket, the single Resvanta credential parameter (only when configured, D8)
+# and this function's logs.
 data "aws_iam_policy_document" "api" {
   statement {
     sid = "Table"
@@ -44,10 +49,13 @@ data "aws_iam_policy_document" "api" {
     resources = [aws_s3_bucket.assets.arn]
   }
 
-  statement {
-    sid       = "ResvantaCredential"
-    actions   = ["ssm:GetParameter"]
-    resources = [local.ssm_parameter]
+  dynamic "statement" {
+    for_each = local.resvanta_configured ? [local.ssm_parameter] : []
+    content {
+      sid       = "ResvantaCredential"
+      actions   = ["ssm:GetParameter"]
+      resources = [statement.value]
+    }
   }
 
   statement {
@@ -83,15 +91,18 @@ resource "aws_lambda_function" "api" {
   source_code_hash               = var.lambda_package_sha256_b64
 
   environment {
-    variables = {
-      WISESTAY_ENVIRONMENT          = var.environment
-      TABLE_NAME                    = aws_dynamodb_table.service.name
-      ASSET_BUCKET                  = aws_s3_bucket.assets.bucket
-      CENTRAL_ISSUER                = var.central_issuer
-      CENTRAL_CLIENT_ID             = var.central_client_id
-      RESVANTA_API_ROOT             = var.resvanta_api_root
-      RESVANTA_CREDENTIAL_PARAMETER = var.resvanta_credential_parameter
-    }
+    variables = merge(
+      {
+        WISESTAY_ENVIRONMENT = var.environment
+        TABLE_NAME           = aws_dynamodb_table.service.name
+        ASSET_BUCKET         = aws_s3_bucket.assets.bucket
+        CENTRAL_ISSUER       = var.central_issuer
+        CENTRAL_CLIENT_ID    = local.central_client_id
+        RESVANTA_API_ROOT    = var.resvanta_api_root
+      },
+      # Without the parameter the backend composes UnconfiguredPropertyReference (Q14).
+      local.resvanta_configured ? { RESVANTA_CREDENTIAL_PARAMETER = var.resvanta_credential_parameter } : {},
+    )
   }
 
   depends_on = [terraform_data.guard, aws_iam_role_policy.api, aws_cloudwatch_log_group.api]

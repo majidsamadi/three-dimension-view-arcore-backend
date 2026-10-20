@@ -51,6 +51,7 @@ variable "lambda_package_sha256_b64" {
 variable "central_issuer" {
   type        = string
   description = "Central WiseStay Cognito issuer, https://cognito-idp.ap-southeast-1.amazonaws.com/<pool id>."
+  default     = "https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_RbRHXUipk"
 
   validation {
     condition     = can(regex("^https://cognito-idp\\.ap-southeast-1\\.amazonaws\\.com/ap-southeast-1_[A-Za-z0-9]+$", var.central_issuer))
@@ -58,13 +59,14 @@ variable "central_issuer" {
   }
 }
 
-variable "central_client_id" {
+variable "runtime_permissions_boundary_arn" {
   type        = string
-  description = "User Management app client id whose access tokens are accepted."
+  description = "Permissions boundary for the runtime role, owned by wisestay-infrastructure applications/three-d-dev."
+  default     = "arn:aws:iam::511831442607:policy/wisestay/3d/dev/wisestay-dev-home-scanner-runtime-boundary"
 
   validation {
-    condition     = can(regex("^[A-Za-z0-9]{1,128}$", var.central_client_id))
-    error_message = "central_client_id must be a Cognito app client id."
+    condition     = var.runtime_permissions_boundary_arn == "arn:aws:iam::511831442607:policy/wisestay/3d/dev/wisestay-dev-home-scanner-runtime-boundary"
+    error_message = "runtime_permissions_boundary_arn must be the Home Scanner runtime boundary."
   }
 }
 
@@ -88,17 +90,6 @@ variable "api_hostname" {
   }
 }
 
-variable "hosted_zone_name" {
-  type        = string
-  description = "Public Route 53 zone holding api_hostname."
-  default     = "wizestay.com"
-
-  validation {
-    condition     = var.hosted_zone_name == "wizestay.com"
-    error_message = "hosted_zone_name must be wizestay.com."
-  }
-}
-
 variable "resvanta_api_root" {
   type        = string
   description = "Resvanta API root (IDM WEB_APIS[\"resvanta\"])."
@@ -111,10 +102,11 @@ variable "resvanta_api_root" {
 
 variable "resvanta_credential_parameter" {
   type        = string
-  description = "Name of the SSM SecureString holding the rv1 machine credential. Created out of band; Terraform never stores the value."
+  description = "Name of the SSM SecureString holding the rv1 machine credential, or \"\" while none exists (D8: Resvanta stays fail-closed). Created out of band; Terraform never stores the value."
+  default     = ""
 
   validation {
-    condition     = can(regex("^/[A-Za-z0-9/_.-]+$", var.resvanta_credential_parameter))
-    error_message = "resvanta_credential_parameter must be an absolute SSM parameter name."
+    condition     = var.resvanta_credential_parameter == "" || can(regex("^/[A-Za-z0-9/_.-]+$", var.resvanta_credential_parameter))
+    error_message = "resvanta_credential_parameter must be empty or an absolute SSM parameter name."
   }
 }
