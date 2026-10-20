@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import unittest
 
+import tests  # noqa: F401  -- puts src/ on sys.path when PYTHONPATH is not set
+
 from wisestay_home_backend.application.resolve_asset_reference import HomeReferenceResolver
 from wisestay_home_backend.domain.asset_reference import (
     ActionDecision,

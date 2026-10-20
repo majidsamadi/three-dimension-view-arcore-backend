@@ -23,3 +23,5 @@ python3 tools/check_contract_fixtures.py --compare ../three-dimension-object-bac
 `SHA256SUMS` lists the 12 files in sorted order (LF only). `README.md` and `SHA256SUMS` sit outside the checksum set; an unlisted file under `fixtures/` or `corrections/` fails the check. `.gitattributes` marks this tree `-text` so git never rewrites the bytes.
 
 Status: component-tested only (`tests/test_contract_fixture_sync.py`, `tests/test_contract_fixtures_v0_3.py`).
+
+A stray `.DS_Store` (or any other unlisted file) under a checksum-closed subtree fails the checker by design; `.gitignore` ignores `.DS_Store` so it is never committed.
