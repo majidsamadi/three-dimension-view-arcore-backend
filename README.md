@@ -14,5 +14,7 @@ The initial commit establishes the default branch so the detailed requirements c
 - [Decisions, acceptance and source register](docs/DECISIONS_AND_ACCEPTANCE.md)
 - [Decisions pending (Q01–Q16)](docs/DECISIONS_PENDING.md)
 - [P03 draft contract fixtures v0.3 — DRAFT / SYNTHETIC, not frozen](contracts/draft/v0.3/README.md)
+- [Wave 2 service slice (HSB-02–06) — Status: component-tested (synthetic data only)](docs/SERVICE_SLICE_WAVE2.md)
+- [Application infrastructure (validated only, not deployed)](infra/README.md)
 
 Owner: Majid Samadi. Product direction: reusable home-scanning SDK/service, local capture, private S3 assets, WebGPU-first visualization and explicit optional cloud refinement. Preserve central WiseStay identity and Resvanta property ownership.
