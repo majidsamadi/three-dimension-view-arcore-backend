@@ -1,0 +1,300 @@
+{
+  "$comment": "DRAFT_SYNTHETIC_NOT_FROZEN (contract fixtures v0.4-draft). Documentation only: validators implement the rules in code (HSB-03.1, OSB-02.4, ARC sdk/src/envelope.ts). Producer: three-dimension-view-arcore (Q01, Q05).",
+  "$id": "https://wizestay.com/schemas/wisestay.asset-envelope.v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "asset_id": {
+      "description": "Stored envelopes carry the asset id. A client draft may send null (home: the scene id is assigned at first finalize) or the existing asset id; any other value is envelope_asset_mismatch.",
+      "pattern": "^(scn|obj)_[0-9A-HJKMNP-TV-Z]{26}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "audience_projection_id": {
+      "description": "Service-filled; null in a client draft.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "bounds_m": {
+      "additionalProperties": false,
+      "properties": {
+        "max": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "type": "array"
+        },
+        "min": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "type": "array"
+        }
+      },
+      "required": [
+        "min",
+        "max"
+      ],
+      "type": "object"
+    },
+    "components": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "maximum": 209715200,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "component_id": {
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "type": "string"
+          },
+          "media_type": {
+            "const": "model/gltf-binary"
+          },
+          "role": {
+            "enum": [
+              "geometry",
+              "review_model",
+              "diagnostics"
+            ]
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "component_id",
+          "role",
+          "media_type",
+          "sha256",
+          "bytes"
+        ],
+        "type": "object"
+      },
+      "maxItems": 10,
+      "minItems": 1,
+      "type": "array"
+    },
+    "frame": {
+      "additionalProperties": false,
+      "properties": {
+        "handedness": {
+          "const": "right"
+        },
+        "units": {
+          "const": "metre"
+        },
+        "up": {
+          "const": "+Y"
+        }
+      },
+      "required": [
+        "handedness",
+        "up",
+        "units"
+      ],
+      "type": "object"
+    },
+    "kind": {
+      "enum": [
+        "home",
+        "object",
+        "shop"
+      ]
+    },
+    "producer": {
+      "additionalProperties": false,
+      "properties": {
+        "app": {
+          "enum": [
+            "home-scanner",
+            "object-scanner"
+          ]
+        },
+        "engine": {
+          "const": "three-dimension-view-arcore"
+        },
+        "engine_version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "engine",
+        "engine_version",
+        "app"
+      ],
+      "type": "object"
+    },
+    "provenance": {
+      "additionalProperties": false,
+      "properties": {
+        "capture_mode": {
+          "const": "local"
+        },
+        "cloud_refinement": {
+          "const": false
+        },
+        "content_class": {
+          "enum": [
+            "synthetic",
+            "permitted-unoccupied-reference"
+          ]
+        },
+        "permission_record_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "capture_mode",
+        "cloud_refinement",
+        "content_class",
+        "permission_record_id"
+      ],
+      "type": "object"
+    },
+    "scale_claim": {
+      "enum": [
+        "unknown",
+        "estimated",
+        "seller-declared",
+        "reference-supported",
+        "independently-verified"
+      ]
+    },
+    "schema": {
+      "const": "wisestay.asset-envelope.v1"
+    },
+    "unobserved_regions": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "bounds_m": {
+            "additionalProperties": false,
+            "properties": {
+              "max": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3,
+                "type": "array"
+              },
+              "min": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3,
+                "type": "array"
+              }
+            },
+            "required": [
+              "min",
+              "max"
+            ],
+            "type": "object"
+          },
+          "label": {
+            "type": "string"
+          },
+          "region_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "region_id",
+          "bounds_m",
+          "label"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "version": {
+      "description": "Service-filled; null in a client draft.",
+      "pattern": "^[1-9][0-9]*$",
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "schema",
+    "asset_id",
+    "kind",
+    "version",
+    "producer",
+    "components",
+    "frame",
+    "bounds_m",
+    "scale_claim",
+    "unobserved_regions",
+    "provenance",
+    "audience_projection_id"
+  ],
+  "title": "wisestay.asset-envelope.v1",
+  "type": "object",
+  "x-wisestay-admission": {
+    "capabilities": {
+      "measurement": "scale_claim in {reference-supported, independently-verified}",
+      "missing_regions": "unobserved_regions",
+      "placement": "scale_claim != unknown",
+      "visual_tour": "validated and has a geometry component"
+    },
+    "envelope_reason_codes": [
+      "envelope_too_large",
+      "envelope_unknown_key",
+      "envelope_schema_unsupported",
+      "envelope_field_invalid",
+      "envelope_asset_mismatch",
+      "envelope_kind_mismatch",
+      "envelope_frame_invalid",
+      "envelope_component_invalid",
+      "envelope_capture_not_local",
+      "envelope_cloud_refinement_enabled",
+      "envelope_bounds_invalid",
+      "raw_capture_not_accepted",
+      "bounds_extent_limit"
+    ],
+    "glb_checks_read_only": "12-byte header, 8-byte chunk header and the JSON chunk",
+    "glb_reason_codes": [
+      "glb_bad_magic",
+      "glb_bad_version",
+      "glb_length_mismatch",
+      "glb_first_chunk_not_json",
+      "glb_json_too_large",
+      "gltf_bad_asset_version",
+      "gltf_extension_required",
+      "gltf_external_uri",
+      "gltf_count_limit",
+      "gltf_vertex_limit",
+      "gltf_position_bounds_missing",
+      "bounds_outside_envelope"
+    ],
+    "position_tolerance_m": 0.01,
+    "rules": [
+      "unknown top-level keys rejected",
+      "schema other than wisestay.asset-envelope.v1 rejected (major version 1 only)",
+      "role raw_capture rejected: validation_failed with raw_capture_not_accepted (Q02)",
+      "provenance.capture_mode must be local and cloud_refinement false",
+      "bounds finite and min <= max; max-axis extent within the kind limit (home 200 m, shop 500 m, object 20 m)",
+      "envelope JSON <= 65536 bytes",
+      "failures put the version in quarantined with reasons[]; never a success state; bytes copied to rejected/ (30 days)"
+    ]
+  }
+}

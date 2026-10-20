@@ -1,0 +1,1216 @@
+{
+  "api_root": "https://finder.dev.wizestay.com/api/v1",
+  "bff_service": "finder",
+  "contract": "wisestay.finder.api",
+  "example_notes": "Synthetic IDs and users only (USER-A = token-A, USER-B = token-B). request_example is {path_params, query, headers, body}; response_example is the JSON body. envelope_sha256 values of 64 zeros are placeholders for the digest of the service-written envelope bytes. 400 idempotency_key_required, 401 identity_required and 409 idempotency_key_reuse apply to every route as listed in conventions.v0.4.json.",
+  "matcher": {
+    "class": "DeterministicIdentifierTextMatcher",
+    "id": "deterministic-identifier-text",
+    "port": "MatcherPort.match(query, catalog_snapshot) -> MatchOutcome",
+    "rules": [
+      {
+        "classification": "exact-confirmed",
+        "rule": "identifier equals a variant GTIN or merchant SKU"
+      },
+      {
+        "classification": "exact-confirmed",
+        "rule": "object_id linked to exactly one variant"
+      },
+      {
+        "candidates": "one per variant",
+        "classification": "ambiguous",
+        "rule": "object_id linked to more than one variant"
+      },
+      {
+        "classification": "probable",
+        "rule": "text: normalised brand + model equal"
+      },
+      {
+        "classification": "similar",
+        "rule": "text: >= 50 % of query tokens in the family name"
+      },
+      {
+        "processing_status": "completed",
+        "result_classification": "no-match",
+        "rule": "no candidates"
+      }
+    ],
+    "version": "1"
+  },
+  "membership_roles": [
+    "merchant_manager",
+    "staff_capture",
+    "reviewer"
+  ],
+  "producer": "where-can-find-this-backend",
+  "result_alt1": {
+    "candidate_classifications": [
+      "exact-confirmed",
+      "probable",
+      "similar",
+      "ambiguous"
+    ],
+    "facets": [
+      "processing_status",
+      "result_classification",
+      "candidates[].classification",
+      "candidates[].reason"
+    ],
+    "precedence": false,
+    "processing_states": [
+      "completed",
+      "provider_failed",
+      "unsupported_input",
+      "partial"
+    ],
+    "provider_failed": "result_classification absent, never no-match",
+    "reason_codes": [
+      "gtin_exact",
+      "merchant_sku_exact",
+      "object_link_exact",
+      "object_link_multiple_variants",
+      "brand_model_exact",
+      "token_overlap"
+    ],
+    "result_classifications": [
+      "exact-confirmed",
+      "probable",
+      "similar",
+      "ambiguous",
+      "no-match"
+    ],
+    "scores": false,
+    "unknown_is_classification": false
+  },
+  "routes": [
+    {
+      "errors": [
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "missing name"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F01",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "The creator becomes merchant_manager.",
+      "path": "/merchants",
+      "request_example": {
+        "body": {
+          "name": "Synthetic Merchant"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-merchant-0001"
+        },
+        "path_params": {},
+        "query": {}
+      },
+      "response_example": {
+        "merchant_id": "mer_01HZYSYNTH0000000000000001",
+        "role": "merchant_manager"
+      },
+      "response_status": 201,
+      "wbs": [
+        "WFB-01.1"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "caller is not a member"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F02",
+      "idempotency_key": "none",
+      "method": "GET",
+      "path": "/merchants/{merchant_id}/members/me",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "merchant_id": "mer_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "merchant_id": "mer_01HZYSYNTH0000000000000001",
+        "role": "merchant_manager",
+        "user_id": "USER-A"
+      },
+      "response_status": 200,
+      "wbs": [
+        "WFB-01.1"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not merchant_manager"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F03",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "role merchant_manager|staff_capture|reviewer.",
+      "path": "/merchants/{merchant_id}/members",
+      "request_example": {
+        "body": {
+          "role": "reviewer",
+          "user_id": "USER-B"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-member-0001"
+        },
+        "path_params": {
+          "merchant_id": "mer_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "merchant_id": "mer_01HZYSYNTH0000000000000001",
+        "role": "reviewer",
+        "user_id": "USER-B"
+      },
+      "response_status": 201,
+      "wbs": [
+        "WFB-01.1"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not merchant_manager"
+        },
+        {
+          "code": "property_not_usable",
+          "status": 422,
+          "when": "property port not_found"
+        },
+        {
+          "code": "dependency_unavailable",
+          "status": 503,
+          "when": "property port unavailable"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F04",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "linked only when the Resvanta port returns current; first slice expects VIRTUAL.",
+      "path": "/shops",
+      "request_example": {
+        "body": {
+          "merchant_id": "mer_01HZYSYNTH0000000000000001",
+          "name": "Synthetic Shop",
+          "premises": {
+            "property_id": "PROP-VIRTUAL-1"
+          }
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-shop-0001"
+        },
+        "path_params": {},
+        "query": {}
+      },
+      "response_example": {
+        "merchant_id": "mer_01HZYSYNTH0000000000000001",
+        "premises": {
+          "premises_status": "linked",
+          "property_id": "PROP-VIRTUAL-1",
+          "property_type": "VIRTUAL"
+        },
+        "shop_id": "shp_01HZYSYNTH0000000000000001"
+      },
+      "response_status": 201,
+      "wbs": [
+        "WFB-01.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller lacks catalog role"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F05",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/shops/{shop_id}/catalog/products",
+      "request_example": {
+        "body": {
+          "brand": "Synthetic",
+          "family_name": "Synthetic box",
+          "model": "Box-1"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-product-0001"
+        },
+        "path_params": {
+          "shop_id": "shp_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "product_id": "prd_01HZYSYNTH0000000000000001"
+      },
+      "response_status": 201,
+      "wbs": [
+        "WFB-02.1"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller lacks catalog role"
+        },
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "duplicate GTIN within the shop"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F06",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/shops/{shop_id}/catalog/products/{product_id}/variants",
+      "request_example": {
+        "body": {
+          "attributes": {
+            "color": null,
+            "package": null,
+            "size": "1 m"
+          },
+          "gtin": "00000000000017",
+          "merchant_sku": "SKU-1"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-fvariant-0001"
+        },
+        "path_params": {
+          "product_id": "prd_01HZYSYNTH0000000000000001",
+          "shop_id": "shp_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "variant_id": "var_01HZYSYNTH0000000000000001"
+      },
+      "response_status": 201,
+      "wbs": [
+        "WFB-02.1"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "limit_exceeded",
+          "status": 413,
+          "when": "more than 500 rows"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F07",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "errors items are {row, reason}.",
+      "path": "/shops/{shop_id}/catalog/imports",
+      "request_example": {
+        "body": {
+          "rows": [
+            {
+              "attributes": {},
+              "brand": "Synthetic",
+              "family_name": "Synthetic box",
+              "gtin": "00000000000024",
+              "merchant_sku": "SKU-2",
+              "model": "Box-2"
+            }
+          ]
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-import-0001"
+        },
+        "path_params": {
+          "shop_id": "shp_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "accepted": [
+          0
+        ],
+        "errors": [],
+        "import_id": "imp_01HZYSYNTH0000000000000001",
+        "state": "preview"
+      },
+      "response_status": 201,
+      "wbs": [
+        "WFB-02.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "F08",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/catalog-imports/{import_id}/commit",
+      "request_example": {
+        "body": {
+          "expected_version": 1
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-commit-0001"
+        },
+        "path_params": {
+          "import_id": "imp_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "created": {
+          "products": 1,
+          "variants": 1
+        },
+        "state": "committed"
+      },
+      "response_status": 200,
+      "wbs": [
+        "WFB-02.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "object not visible to the caller (O13)"
+        },
+        {
+          "code": "dependency_unavailable",
+          "status": 503,
+          "when": "Object Scanner unavailable"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F09",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/shops/{shop_id}/catalog/variants/{variant_id}/object-links",
+      "request_example": {
+        "body": {
+          "object_id": "obj_01HZYSYNTH0000000000000001",
+          "version": "1"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-olink-0001"
+        },
+        "path_params": {
+          "shop_id": "shp_01HZYSYNTH0000000000000001",
+          "variant_id": "var_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "link_id": "lnk_01HZYSYNTH0000000000000001",
+        "link_status": "linked"
+      },
+      "response_status": 201,
+      "wbs": [
+        "WFB-02.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "F10",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "History kept.",
+      "path": "/object-links/{link_id}/withdraw",
+      "request_example": {
+        "body": {
+          "expected_version": 1,
+          "reason": "synthetic"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-olinkw-0001"
+        },
+        "path_params": {
+          "link_id": "lnk_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "link_status": "withdrawn"
+      },
+      "response_status": 200,
+      "wbs": [
+        "WFB-02.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "not_a_shop_scene (H09 kind is not shop or not published)"
+        },
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "scene not visible"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F11",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/shops/{shop_id}/maps",
+      "request_example": {
+        "body": {
+          "scene_id": "scn_01HZYSYNTH0000000000000001",
+          "scene_version": "1"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-map-0001"
+        },
+        "path_params": {
+          "shop_id": "shp_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "map_id": "map_01HZYSYNTH0000000000000001",
+        "map_version": 1,
+        "scene_id": "scn_01HZYSYNTH0000000000000001",
+        "scene_version": "1"
+      },
+      "response_status": 201,
+      "wbs": [
+        "WFB-03.1"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "stale map_version"
+        },
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "region outside the scene bounds"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F12",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/shops/{shop_id}/maps/{map_id}/locations",
+      "request_example": {
+        "body": {
+          "aisle": "1",
+          "bay": "2",
+          "floor": "G",
+          "label": "Aisle 1 bay 2 shelf 3",
+          "map_version": 1,
+          "region_bounds_m": {
+            "max": [
+              0.0,
+              0.5,
+              0.0
+            ],
+            "min": [
+              -0.5,
+              0.0,
+              -0.5
+            ]
+          },
+          "shelf": "3"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-loc-0001"
+        },
+        "path_params": {
+          "map_id": "map_01HZYSYNTH0000000000000001",
+          "shop_id": "shp_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "location_id": "loc_01HZYSYNTH0000000000000001",
+        "map_version": 1,
+        "state": "current"
+      },
+      "response_status": 201,
+      "wbs": [
+        "WFB-03.2",
+        "WFB-03.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "F13",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "Every location of the previous map version becomes needs_review and is not auto-moved.",
+      "path": "/shops/{shop_id}/maps/{map_id}/replace",
+      "request_example": {
+        "body": {
+          "expected_version": 1,
+          "scene_id": "scn_01HZYSYNTH0000000000000001",
+          "scene_version": "2"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-replace-0001"
+        },
+        "path_params": {
+          "map_id": "map_01HZYSYNTH0000000000000001",
+          "shop_id": "shp_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "map_version": 2
+      },
+      "response_status": 200,
+      "wbs": [
+        "WFB-03.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "F14",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/locations/{location_id}/migrate",
+      "request_example": {
+        "body": {
+          "expected_version": 2,
+          "region_bounds_m": {
+            "max": [
+              0.0,
+              0.5,
+              0.0
+            ],
+            "min": [
+              -0.5,
+              0.0,
+              -0.5
+            ]
+          },
+          "to_map_version": 2
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-migrate-0001"
+        },
+        "path_params": {
+          "location_id": "loc_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "map_version": 2,
+        "state": "current"
+      },
+      "response_status": 200,
+      "wbs": [
+        "WFB-03.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "invalid_state",
+          "status": 409,
+          "when": "location not current for that map_version"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F15",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/shops/{shop_id}/catalog/variants/{variant_id}/locations",
+      "request_example": {
+        "body": {
+          "location_id": "loc_01HZYSYNTH0000000000000001",
+          "map_version": 1
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-bind-0001"
+        },
+        "path_params": {
+          "shop_id": "shp_01HZYSYNTH0000000000000001",
+          "variant_id": "var_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "binding_id": "bnd_01HZYSYNTH0000000000000001"
+      },
+      "response_status": 201,
+      "wbs": [
+        "WFB-03.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "unsupported_input",
+          "status": 422,
+          "when": "input kind photo (no matcher model selected)"
+        },
+        {
+          "code": "invalid_request",
+          "status": 400,
+          "when": "missing consent or unknown input kind"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F16",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "Processing is synchronous in the first slice; a GET right after usually shows completed.",
+      "path": "/queries",
+      "request_example": {
+        "body": {
+          "consent": {
+            "process_query": true
+          },
+          "input": {
+            "kind": "identifier",
+            "value": "00000000000017"
+          },
+          "shop_id": "shp_01HZYSYNTH0000000000000001"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-query-0001"
+        },
+        "path_params": {},
+        "query": {}
+      },
+      "response_example": {
+        "expires_at": "2026-10-21T00:00:00Z",
+        "query_id": "qry_01HZYSYNTH0000000000000001",
+        "state": "accepted"
+      },
+      "response_status": 201,
+      "wbs": [
+        "WFB-04.1",
+        "WFB-04.2",
+        "WFB-04.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "not the query owner"
+        },
+        {
+          "code": "query_expired",
+          "status": 410,
+          "when": "older than 24 h"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F17",
+      "idempotency_key": "none",
+      "method": "GET",
+      "notes": "state accepted|processing|completed|failed|cancelled; owner only.",
+      "path": "/queries/{query_id}",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "query_id": "qry_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "expires_at": "2026-10-21T00:00:00Z",
+        "query_id": "qry_01HZYSYNTH0000000000000001",
+        "state": "completed"
+      },
+      "response_status": 200,
+      "wbs": [
+        "WFB-04.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "not the query owner"
+        },
+        {
+          "code": "query_expired",
+          "status": 410,
+          "when": "older than 24 h"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F18",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/queries/{query_id}/cancel",
+      "request_example": {
+        "body": {},
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-qcancel-0001"
+        },
+        "path_params": {
+          "query_id": "qry_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "state": "cancelled"
+      },
+      "response_status": 200,
+      "wbs": [
+        "WFB-04.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "not the query owner"
+        },
+        {
+          "code": "query_expired",
+          "status": 410,
+          "when": "older than 24 h"
+        },
+        {
+          "code": "invalid_state",
+          "status": 409,
+          "when": "query cancelled"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F19",
+      "idempotency_key": "none",
+      "method": "GET",
+      "notes": "ALT1 (Q06): classification, reason and processing status are separate facets; no scores, no precedence.",
+      "path": "/queries/{query_id}/results",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "query_id": "qry_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "candidates": [
+          {
+            "availability_ref": "/products/prd_01HZYSYNTH0000000000000001/locations?variant_id=var_01HZYSYNTH0000000000000001",
+            "candidate_id": "cand_01HZYSYNTH0000000000000001",
+            "classification": "exact-confirmed",
+            "product_id": "prd_01HZYSYNTH0000000000000001",
+            "reason": {
+              "code": "gtin_exact",
+              "detail": "GTIN equals variant GTIN"
+            },
+            "variant_id": "var_01HZYSYNTH0000000000000001"
+          }
+        ],
+        "catalog_snapshot_version": "1",
+        "matcher": {
+          "id": "deterministic-identifier-text",
+          "version": "1"
+        },
+        "processing_status": {
+          "detail": "identifier matched",
+          "state": "completed"
+        },
+        "query_id": "qry_01HZYSYNTH0000000000000001",
+        "result_classification": "exact-confirmed"
+      },
+      "response_status": 200,
+      "wbs": [
+        "WFB-05.1",
+        "WFB-05.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller lacks reviewer or manager role"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F20",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/shops/{shop_id}/match-corrections",
+      "request_example": {
+        "body": {
+          "candidate_id": "cand_01HZYSYNTH0000000000000001",
+          "corrected_variant_id": null,
+          "query_id": "qry_01HZYSYNTH0000000000000001",
+          "reason": "synthetic"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-correct-0001"
+        },
+        "path_params": {
+          "shop_id": "shp_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "correction_id": "cor_01HZYSYNTH0000000000000001",
+        "matcher": {
+          "id": "deterministic-identifier-text",
+          "version": "1"
+        },
+        "recorded_by": "USER-A"
+      },
+      "response_status": 201,
+      "wbs": [
+        "WFB-05.4",
+        "WFB-08.1"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller lacks staff role"
+        },
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "quantity negative, quantity set when not-tracked, or valid_for_s > 604800"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F21",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/shops/{shop_id}/availability-snapshots",
+      "request_example": {
+        "body": {
+          "entries": [
+            {
+              "location_id": "loc_01HZYSYNTH0000000000000001",
+              "observed_at": "2026-10-20T00:00:00Z",
+              "quantity": 4,
+              "quantity_basis": "merchant-entered",
+              "valid_for_s": 86400,
+              "variant_id": "var_01HZYSYNTH0000000000000001"
+            }
+          ]
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-avs-0001"
+        },
+        "path_params": {
+          "shop_id": "shp_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "record_version": 1,
+        "snapshot_id": "avs_01HZYSYNTH0000000000000001",
+        "state": "draft"
+      },
+      "response_status": 201,
+      "wbs": [
+        "WFB-08.1",
+        "WFB-08.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "not reviewer/manager, or the drafter (unless sole manager)"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "F22",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "The sole-manager self-review is allowed and flagged self_reviewed:true.",
+      "path": "/availability-snapshots/{snapshot_id}/review",
+      "request_example": {
+        "body": {
+          "corrections": null,
+          "decision": "approved",
+          "expected_version": 1
+        },
+        "headers": {
+          "Authorization": "Bearer token-B",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-avsreview-0001"
+        },
+        "path_params": {
+          "snapshot_id": "avs_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "self_reviewed": false,
+        "state": "approved"
+      },
+      "response_status": 200,
+      "wbs": [
+        "WFB-08.1"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "invalid_state",
+          "status": 409,
+          "when": "snapshot not approved"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "F23",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/availability-snapshots/{snapshot_id}/publish",
+      "request_example": {
+        "body": {
+          "expected_version": 2
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-avspub-0001"
+        },
+        "path_params": {
+          "snapshot_id": "avs_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "projection_version": 1,
+        "published_at": "2026-10-20T00:00:00Z"
+      },
+      "response_status": 200,
+      "wbs": [
+        "WFB-08.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not merchant_manager"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "F24",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/shops/{shop_id}/availability/withdraw",
+      "request_example": {
+        "body": {
+          "expected_version": 1,
+          "reason": "synthetic"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-avsw-0001"
+        },
+        "path_params": {
+          "shop_id": "shp_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "state": "withdrawn"
+      },
+      "response_status": 200,
+      "wbs": [
+        "WFB-08.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "product not found"
+        }
+      ],
+      "expected_version": "none",
+      "id": "F25",
+      "idempotency_key": "none",
+      "method": "GET",
+      "notes": "Withdrawn shops omitted. Stale entries are never presented as current; zero or shortage is never inferred.",
+      "path": "/products/{product_id}/locations",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "product_id": "prd_01HZYSYNTH0000000000000001"
+        },
+        "query": {
+          "variant_id": "var_01HZYSYNTH0000000000000001"
+        }
+      },
+      "response_example": {
+        "entries": [
+          {
+            "availability": {
+              "fresh_until": "2026-10-21T00:00:00Z",
+              "freshness": "current",
+              "published_at": "2026-10-20T00:00:00Z",
+              "quantity": 4,
+              "quantity_basis": "merchant-entered"
+            },
+            "location": {
+              "aisle": "1",
+              "bay": "2",
+              "floor": "G",
+              "label": "Aisle 1 bay 2 shelf 3",
+              "map_id": "map_01HZYSYNTH0000000000000001",
+              "map_version": 1,
+              "region_bounds_m": {
+                "max": [
+                  0.0,
+                  0.5,
+                  0.0
+                ],
+                "min": [
+                  -0.5,
+                  0.0,
+                  -0.5
+                ]
+              },
+              "shelf": "3"
+            },
+            "shop_id": "shp_01HZYSYNTH0000000000000001",
+            "shop_name": "Synthetic Shop"
+          }
+        ]
+      },
+      "response_status": 200,
+      "wbs": [
+        "WFB-08.3",
+        "WFA-03.3"
+      ]
+    }
+  ],
+  "status": "DRAFT_SYNTHETIC_NOT_FROZEN",
+  "version": "0.4-draft"
+}

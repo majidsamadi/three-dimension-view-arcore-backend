@@ -1,0 +1,1125 @@
+{
+  "contract": "wisestay.asset-envelope.v1.examples",
+  "glb": {
+    "bytes": 812,
+    "path": "fixtures/assets/synthetic-unit-box.glb",
+    "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+  },
+  "invalid": [
+    {
+      "base": "VAL-01-home",
+      "case_id": "INV-01-unknown-top-level-key",
+      "envelope": {
+        "asset_id": "scn_01HZYSYNTH0000000000000001",
+        "audience_projection_id": "prj_01HZYSYNTH0000000000000001",
+        "bounds_m": {
+          "max": [
+            0.5,
+            1.0,
+            0.5
+          ],
+          "min": [
+            -0.5,
+            0.0,
+            -0.5
+          ]
+        },
+        "components": [
+          {
+            "bytes": 812,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "geometry",
+            "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+          }
+        ],
+        "frame": {
+          "handedness": "right",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "home",
+        "preview_url": "https://example.invalid/x",
+        "producer": {
+          "app": "home-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "local",
+          "cloud_refinement": false,
+          "content_class": "synthetic",
+          "permission_record_id": null
+        },
+        "scale_claim": "reference-supported",
+        "schema": "wisestay.asset-envelope.v1",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      },
+      "expected_reasons": [
+        "envelope_unknown_key"
+      ]
+    },
+    {
+      "base": "VAL-01-home",
+      "case_id": "INV-02-schema-other",
+      "envelope": {
+        "asset_id": "scn_01HZYSYNTH0000000000000001",
+        "audience_projection_id": "prj_01HZYSYNTH0000000000000001",
+        "bounds_m": {
+          "max": [
+            0.5,
+            1.0,
+            0.5
+          ],
+          "min": [
+            -0.5,
+            0.0,
+            -0.5
+          ]
+        },
+        "components": [
+          {
+            "bytes": 812,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "geometry",
+            "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+          }
+        ],
+        "frame": {
+          "handedness": "right",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "home",
+        "producer": {
+          "app": "home-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "local",
+          "cloud_refinement": false,
+          "content_class": "synthetic",
+          "permission_record_id": null
+        },
+        "scale_claim": "reference-supported",
+        "schema": "wisestay.asset-envelope.v2",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      },
+      "expected_reasons": [
+        "envelope_schema_unsupported"
+      ]
+    },
+    {
+      "base": "VAL-01-home",
+      "case_id": "INV-03-raw-capture-role",
+      "envelope": {
+        "asset_id": "scn_01HZYSYNTH0000000000000001",
+        "audience_projection_id": "prj_01HZYSYNTH0000000000000001",
+        "bounds_m": {
+          "max": [
+            0.5,
+            1.0,
+            0.5
+          ],
+          "min": [
+            -0.5,
+            0.0,
+            -0.5
+          ]
+        },
+        "components": [
+          {
+            "bytes": 812,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "raw_capture",
+            "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+          }
+        ],
+        "frame": {
+          "handedness": "right",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "home",
+        "producer": {
+          "app": "home-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "local",
+          "cloud_refinement": false,
+          "content_class": "synthetic",
+          "permission_record_id": null
+        },
+        "scale_claim": "reference-supported",
+        "schema": "wisestay.asset-envelope.v1",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      },
+      "expected_reasons": [
+        "raw_capture_not_accepted"
+      ]
+    },
+    {
+      "base": "VAL-01-home",
+      "case_id": "INV-04-capture-mode-cloud",
+      "envelope": {
+        "asset_id": "scn_01HZYSYNTH0000000000000001",
+        "audience_projection_id": "prj_01HZYSYNTH0000000000000001",
+        "bounds_m": {
+          "max": [
+            0.5,
+            1.0,
+            0.5
+          ],
+          "min": [
+            -0.5,
+            0.0,
+            -0.5
+          ]
+        },
+        "components": [
+          {
+            "bytes": 812,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "geometry",
+            "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+          }
+        ],
+        "frame": {
+          "handedness": "right",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "home",
+        "producer": {
+          "app": "home-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "cloud",
+          "cloud_refinement": false,
+          "content_class": "synthetic",
+          "permission_record_id": null
+        },
+        "scale_claim": "reference-supported",
+        "schema": "wisestay.asset-envelope.v1",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      },
+      "expected_reasons": [
+        "envelope_capture_not_local"
+      ]
+    },
+    {
+      "base": "VAL-01-home",
+      "case_id": "INV-05-cloud-refinement-true",
+      "envelope": {
+        "asset_id": "scn_01HZYSYNTH0000000000000001",
+        "audience_projection_id": "prj_01HZYSYNTH0000000000000001",
+        "bounds_m": {
+          "max": [
+            0.5,
+            1.0,
+            0.5
+          ],
+          "min": [
+            -0.5,
+            0.0,
+            -0.5
+          ]
+        },
+        "components": [
+          {
+            "bytes": 812,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "geometry",
+            "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+          }
+        ],
+        "frame": {
+          "handedness": "right",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "home",
+        "producer": {
+          "app": "home-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "local",
+          "cloud_refinement": true,
+          "content_class": "synthetic",
+          "permission_record_id": null
+        },
+        "scale_claim": "reference-supported",
+        "schema": "wisestay.asset-envelope.v1",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      },
+      "expected_reasons": [
+        "envelope_cloud_refinement_enabled"
+      ]
+    },
+    {
+      "base": "VAL-01-home",
+      "case_id": "INV-06-frame-left-handed",
+      "envelope": {
+        "asset_id": "scn_01HZYSYNTH0000000000000001",
+        "audience_projection_id": "prj_01HZYSYNTH0000000000000001",
+        "bounds_m": {
+          "max": [
+            0.5,
+            1.0,
+            0.5
+          ],
+          "min": [
+            -0.5,
+            0.0,
+            -0.5
+          ]
+        },
+        "components": [
+          {
+            "bytes": 812,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "geometry",
+            "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+          }
+        ],
+        "frame": {
+          "handedness": "left",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "home",
+        "producer": {
+          "app": "home-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "local",
+          "cloud_refinement": false,
+          "content_class": "synthetic",
+          "permission_record_id": null
+        },
+        "scale_claim": "reference-supported",
+        "schema": "wisestay.asset-envelope.v1",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      },
+      "expected_reasons": [
+        "envelope_frame_invalid"
+      ]
+    },
+    {
+      "base": "VAL-01-home",
+      "case_id": "INV-07-sha256-not-hex",
+      "envelope": {
+        "asset_id": "scn_01HZYSYNTH0000000000000001",
+        "audience_projection_id": "prj_01HZYSYNTH0000000000000001",
+        "bounds_m": {
+          "max": [
+            0.5,
+            1.0,
+            0.5
+          ],
+          "min": [
+            -0.5,
+            0.0,
+            -0.5
+          ]
+        },
+        "components": [
+          {
+            "bytes": 812,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "geometry",
+            "sha256": "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+          }
+        ],
+        "frame": {
+          "handedness": "right",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "home",
+        "producer": {
+          "app": "home-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "local",
+          "cloud_refinement": false,
+          "content_class": "synthetic",
+          "permission_record_id": null
+        },
+        "scale_claim": "reference-supported",
+        "schema": "wisestay.asset-envelope.v1",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      },
+      "expected_reasons": [
+        "envelope_component_invalid"
+      ]
+    },
+    {
+      "base": "VAL-01-home",
+      "case_id": "INV-08-bytes-over-limit",
+      "envelope": {
+        "asset_id": "scn_01HZYSYNTH0000000000000001",
+        "audience_projection_id": "prj_01HZYSYNTH0000000000000001",
+        "bounds_m": {
+          "max": [
+            0.5,
+            1.0,
+            0.5
+          ],
+          "min": [
+            -0.5,
+            0.0,
+            -0.5
+          ]
+        },
+        "components": [
+          {
+            "bytes": 209715201,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "geometry",
+            "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+          }
+        ],
+        "frame": {
+          "handedness": "right",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "home",
+        "producer": {
+          "app": "home-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "local",
+          "cloud_refinement": false,
+          "content_class": "synthetic",
+          "permission_record_id": null
+        },
+        "scale_claim": "reference-supported",
+        "schema": "wisestay.asset-envelope.v1",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      },
+      "expected_reasons": [
+        "envelope_component_invalid"
+      ]
+    },
+    {
+      "base": "VAL-01-home",
+      "case_id": "INV-09-bounds-min-gt-max",
+      "envelope": {
+        "asset_id": "scn_01HZYSYNTH0000000000000001",
+        "audience_projection_id": "prj_01HZYSYNTH0000000000000001",
+        "bounds_m": {
+          "max": [
+            -0.5,
+            0.0,
+            -0.5
+          ],
+          "min": [
+            0.5,
+            1.0,
+            0.5
+          ]
+        },
+        "components": [
+          {
+            "bytes": 812,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "geometry",
+            "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+          }
+        ],
+        "frame": {
+          "handedness": "right",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "home",
+        "producer": {
+          "app": "home-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "local",
+          "cloud_refinement": false,
+          "content_class": "synthetic",
+          "permission_record_id": null
+        },
+        "scale_claim": "reference-supported",
+        "schema": "wisestay.asset-envelope.v1",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      },
+      "expected_reasons": [
+        "envelope_bounds_invalid"
+      ]
+    },
+    {
+      "base": "VAL-01-home",
+      "case_id": "INV-10-home-extent-over-200m",
+      "envelope": {
+        "asset_id": "scn_01HZYSYNTH0000000000000001",
+        "audience_projection_id": "prj_01HZYSYNTH0000000000000001",
+        "bounds_m": {
+          "max": [
+            200.0,
+            1.0,
+            0.5
+          ],
+          "min": [
+            -0.5,
+            0.0,
+            -0.5
+          ]
+        },
+        "components": [
+          {
+            "bytes": 812,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "geometry",
+            "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+          }
+        ],
+        "frame": {
+          "handedness": "right",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "home",
+        "producer": {
+          "app": "home-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "local",
+          "cloud_refinement": false,
+          "content_class": "synthetic",
+          "permission_record_id": null
+        },
+        "scale_claim": "reference-supported",
+        "schema": "wisestay.asset-envelope.v1",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      },
+      "expected_reasons": [
+        "bounds_extent_limit"
+      ]
+    },
+    {
+      "base": "VAL-01-home",
+      "case_id": "INV-11-unknown-kind",
+      "envelope": {
+        "asset_id": "scn_01HZYSYNTH0000000000000001",
+        "audience_projection_id": "prj_01HZYSYNTH0000000000000001",
+        "bounds_m": {
+          "max": [
+            0.5,
+            1.0,
+            0.5
+          ],
+          "min": [
+            -0.5,
+            0.0,
+            -0.5
+          ]
+        },
+        "components": [
+          {
+            "bytes": 812,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "geometry",
+            "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+          }
+        ],
+        "frame": {
+          "handedness": "right",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "vehicle",
+        "producer": {
+          "app": "home-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "local",
+          "cloud_refinement": false,
+          "content_class": "synthetic",
+          "permission_record_id": null
+        },
+        "scale_claim": "reference-supported",
+        "schema": "wisestay.asset-envelope.v1",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      },
+      "expected_reasons": [
+        "envelope_field_invalid"
+      ]
+    },
+    {
+      "base": "VAL-01-home",
+      "case_id": "INV-12-unknown-scale-claim",
+      "envelope": {
+        "asset_id": "scn_01HZYSYNTH0000000000000001",
+        "audience_projection_id": "prj_01HZYSYNTH0000000000000001",
+        "bounds_m": {
+          "max": [
+            0.5,
+            1.0,
+            0.5
+          ],
+          "min": [
+            -0.5,
+            0.0,
+            -0.5
+          ]
+        },
+        "components": [
+          {
+            "bytes": 812,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "geometry",
+            "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+          }
+        ],
+        "frame": {
+          "handedness": "right",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "home",
+        "producer": {
+          "app": "home-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "local",
+          "cloud_refinement": false,
+          "content_class": "synthetic",
+          "permission_record_id": null
+        },
+        "scale_claim": "guessed",
+        "schema": "wisestay.asset-envelope.v1",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      },
+      "expected_reasons": [
+        "envelope_field_invalid"
+      ]
+    },
+    {
+      "base": "VAL-01-home",
+      "case_id": "INV-13-glb-outside-envelope-bounds",
+      "envelope": {
+        "asset_id": "scn_01HZYSYNTH0000000000000001",
+        "audience_projection_id": "prj_01HZYSYNTH0000000000000001",
+        "bounds_m": {
+          "max": [
+            0.25,
+            0.5,
+            0.25
+          ],
+          "min": [
+            -0.25,
+            0.0,
+            -0.25
+          ]
+        },
+        "components": [
+          {
+            "bytes": 812,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "geometry",
+            "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+          }
+        ],
+        "frame": {
+          "handedness": "right",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "home",
+        "producer": {
+          "app": "home-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "local",
+          "cloud_refinement": false,
+          "content_class": "synthetic",
+          "permission_record_id": null
+        },
+        "scale_claim": "reference-supported",
+        "schema": "wisestay.asset-envelope.v1",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      },
+      "expected_reasons": [
+        "bounds_outside_envelope"
+      ]
+    }
+  ],
+  "notes": "Each invalid case changes exactly one thing in VAL-01-home. INV-13 needs the GLB (its POSITION bounds exceed the envelope bounds by more than 1 cm); the others fail on the envelope alone. Envelope-level reason codes are S0 draft codes (plan X.2.1 names only the GLB codes and raw_capture_not_accepted).",
+  "producer": "three-dimension-view-arcore (schema owner, Q01/Q05); examples transcribed in S0",
+  "status": "DRAFT_SYNTHETIC_NOT_FROZEN",
+  "valid": [
+    {
+      "case_id": "VAL-01-home",
+      "envelope": {
+        "asset_id": "scn_01HZYSYNTH0000000000000001",
+        "audience_projection_id": "prj_01HZYSYNTH0000000000000001",
+        "bounds_m": {
+          "max": [
+            0.5,
+            1.0,
+            0.5
+          ],
+          "min": [
+            -0.5,
+            0.0,
+            -0.5
+          ]
+        },
+        "components": [
+          {
+            "bytes": 812,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "geometry",
+            "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+          }
+        ],
+        "frame": {
+          "handedness": "right",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "home",
+        "producer": {
+          "app": "home-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "local",
+          "cloud_refinement": false,
+          "content_class": "synthetic",
+          "permission_record_id": null
+        },
+        "scale_claim": "reference-supported",
+        "schema": "wisestay.asset-envelope.v1",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      }
+    },
+    {
+      "case_id": "VAL-02-object",
+      "envelope": {
+        "asset_id": "obj_01HZYSYNTH0000000000000001",
+        "audience_projection_id": null,
+        "bounds_m": {
+          "max": [
+            0.5,
+            1.0,
+            0.5
+          ],
+          "min": [
+            -0.5,
+            0.0,
+            -0.5
+          ]
+        },
+        "components": [
+          {
+            "bytes": 812,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "geometry",
+            "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+          }
+        ],
+        "frame": {
+          "handedness": "right",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "object",
+        "producer": {
+          "app": "object-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "local",
+          "cloud_refinement": false,
+          "content_class": "synthetic",
+          "permission_record_id": null
+        },
+        "scale_claim": "reference-supported",
+        "schema": "wisestay.asset-envelope.v1",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      }
+    },
+    {
+      "case_id": "VAL-03-shop",
+      "envelope": {
+        "asset_id": "scn_01HZYSYNTH0000000000000002",
+        "audience_projection_id": null,
+        "bounds_m": {
+          "max": [
+            0.5,
+            1.0,
+            0.5
+          ],
+          "min": [
+            -0.5,
+            0.0,
+            -0.5
+          ]
+        },
+        "components": [
+          {
+            "bytes": 812,
+            "component_id": "main",
+            "media_type": "model/gltf-binary",
+            "role": "geometry",
+            "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+          }
+        ],
+        "frame": {
+          "handedness": "right",
+          "units": "metre",
+          "up": "+Y"
+        },
+        "kind": "shop",
+        "producer": {
+          "app": "home-scanner",
+          "engine": "three-dimension-view-arcore",
+          "engine_version": "0.2.0"
+        },
+        "provenance": {
+          "capture_mode": "local",
+          "cloud_refinement": false,
+          "content_class": "permitted-unoccupied-reference",
+          "permission_record_id": "PERM-SYNTHETIC-1"
+        },
+        "scale_claim": "estimated",
+        "schema": "wisestay.asset-envelope.v1",
+        "unobserved_regions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                0.25,
+                0.75,
+                0.25
+              ]
+            },
+            "label": "Not observed",
+            "region_id": "r1"
+          }
+        ],
+        "version": "1"
+      }
+    }
+  ],
+  "version": "0.4-draft"
+}

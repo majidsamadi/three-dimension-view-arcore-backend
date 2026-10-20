@@ -1,0 +1,1262 @@
+{
+  "api_root": "https://composer.dev.wizestay.com/api/v1",
+  "bff_service": "composer",
+  "contract": "wisestay.composer.api",
+  "example_notes": "Synthetic IDs and users only (USER-A = token-A, USER-B = token-B). request_example is {path_params, query, headers, body}; response_example is the JSON body. envelope_sha256 values of 64 zeros are placeholders for the digest of the service-written envelope bytes. 400 idempotency_key_required, 401 identity_required and 409 idempotency_key_reuse apply to every route as listed in conventions.v0.4.json.",
+  "fit_rules": {
+    "approximate": "claims estimated or seller-declared",
+    "combined_uncertainty_m": "sqrt(u_obj^2 + u_room^2); u_obj = max(0.01, 0.03*max(dimensions_m)); u_room = max(0.05, 0.02*max(home bounds extent))",
+    "margin_m": "clearance_margin_m; footprint: minimum distance from the footprint to the home bounds",
+    "openings": "reasons [opening_clearance_not_supported]",
+    "otherwise": "unverified_fit",
+    "thresholds_version": "Q03-provisional-2026-10-20",
+    "unknown": "illustrative mode, or either scale claim unknown",
+    "verified_fit": "both claims in {reference-supported, independently-verified} and combined_uncertainty_m < margin_m"
+  },
+  "producer": "home-composer-backend",
+  "roles": {
+    "commenter": {
+      "comment": true,
+      "edit": false,
+      "read": true,
+      "share_archive": false
+    },
+    "editor": {
+      "comment": true,
+      "edit": true,
+      "read": true,
+      "share_archive": false
+    },
+    "owner": {
+      "comment": true,
+      "edit": true,
+      "read": true,
+      "share_archive": true
+    },
+    "viewer": {
+      "comment": false,
+      "edit": false,
+      "read": true,
+      "share_archive": false
+    }
+  },
+  "routes": [
+    {
+      "errors": [
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "home_source null outside non_property_sandbox, or unknown context_kind"
+        },
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "home not visible to the caller"
+        },
+        {
+          "code": "dependency_unavailable",
+          "status": 503,
+          "when": "Home Scanner or Resvanta unavailable"
+        }
+      ],
+      "expected_version": "none",
+      "id": "C01",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "The same Idempotency-Key returns the same design. context_kind is a DesignContextKind value; property_id required unless sandbox.",
+      "path": "/designs",
+      "request_example": {
+        "body": {
+          "context_kind": "property_home",
+          "home_source": {
+            "scene_id": "scn_01HZYSYNTH0000000000000001",
+            "version": "1"
+          },
+          "property_id": "PROP-VIRTUAL-1",
+          "title": "Synthetic plan"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-design-0001"
+        },
+        "path_params": {},
+        "query": {}
+      },
+      "response_example": {
+        "branch_id": "main",
+        "context_kind": "property_home",
+        "design_id": "dsg_01HZYSYNTH0000000000000001",
+        "home_source": {
+          "scene_id": "scn_01HZYSYNTH0000000000000001",
+          "version": "1"
+        },
+        "revision": 1,
+        "role": "owner"
+      },
+      "response_status": 201,
+      "wbs": [
+        "HCB-01.4"
+      ]
+    },
+    {
+      "errors": [],
+      "expected_version": "none",
+      "id": "C02",
+      "idempotency_key": "none",
+      "method": "GET",
+      "notes": "Designs the caller owns or is shared on.",
+      "path": "/designs",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {},
+        "query": {
+          "limit": 20,
+          "status": "active"
+        }
+      },
+      "response_example": {
+        "items": [
+          {
+            "design_id": "dsg_01HZYSYNTH0000000000000001",
+            "role": "owner",
+            "status": "active",
+            "title": "Synthetic plan"
+          }
+        ],
+        "next_cursor": null
+      },
+      "response_status": 200,
+      "wbs": [
+        "HCB-01.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "design not visible"
+        }
+      ],
+      "expected_version": "none",
+      "id": "C03",
+      "idempotency_key": "none",
+      "method": "GET",
+      "path": "/designs/{design_id}",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "design_id": "dsg_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "branches": [
+          {
+            "base_revision": 1,
+            "branch_id": "main",
+            "head_revision": 2,
+            "name": "Main"
+          }
+        ],
+        "context_kind": "property_home",
+        "design_id": "dsg_01HZYSYNTH0000000000000001",
+        "home_source": {
+          "scene_id": "scn_01HZYSYNTH0000000000000001",
+          "version": "1"
+        },
+        "record_version": 1,
+        "role": "owner",
+        "status": "active",
+        "title": "Synthetic plan"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HCB-01.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "design, branch or revision not visible"
+        }
+      ],
+      "expected_version": "none",
+      "id": "C04",
+      "idempotency_key": "none",
+      "method": "GET",
+      "path": "/designs/{design_id}/branches/{branch_id}/revisions/{revision}",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "branch_id": "main",
+          "design_id": "dsg_01HZYSYNTH0000000000000001",
+          "revision": "2"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "created_at": "2026-10-20T00:00:00Z",
+        "created_by": "USER-A",
+        "parent_revision": 1,
+        "placements": [
+          {
+            "dimensions_m": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "hidden": false,
+            "illustrative_scale": null,
+            "object_source": {
+              "object_id": "obj_01HZYSYNTH0000000000000001",
+              "version": "1"
+            },
+            "placement_id": "plc_01HZYSYNTH0000000000000001",
+            "scale_claim": "reference-supported",
+            "scale_mode": "real",
+            "transform": {
+              "position_m": [
+                1.0,
+                0.0,
+                1.0
+              ],
+              "rotation_deg_y": 90
+            }
+          }
+        ],
+        "revision": 2
+      },
+      "response_status": 200,
+      "wbs": [
+        "HCB-05.1"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the owner"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "C05",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/designs/{design_id}/archive",
+      "request_example": {
+        "body": {
+          "expected_version": 1
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-archive-0001"
+        },
+        "path_params": {
+          "design_id": "dsg_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "status": "archived"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HCB-01.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_revision differs (+current_revision)"
+        },
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "viewer or commenter; or source_access_denied (object not usable with place by the caller)"
+        },
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "non-finite transform or |position| > 500 m"
+        },
+        {
+          "code": "unsupported_scale",
+          "status": 422,
+          "when": "real mode and object effective_scale_claim unknown with no dimensions"
+        }
+      ],
+      "expected_version": "body",
+      "id": "C06",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "expected_revision is the composer concurrency field (body). Defaults: scale_mode real; dimensions_m from O13 effective_dimensions_m.",
+      "path": "/designs/{design_id}/branches/{branch_id}/placements",
+      "request_example": {
+        "body": {
+          "expected_revision": 1,
+          "illustrative_scale": null,
+          "object_source": {
+            "object_id": "obj_01HZYSYNTH0000000000000001",
+            "version": "1"
+          },
+          "scale_mode": "real",
+          "transform": {
+            "position_m": [
+              1.0,
+              0.0,
+              1.0
+            ],
+            "rotation_deg_y": 90
+          }
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-place-0001"
+        },
+        "path_params": {
+          "branch_id": "main",
+          "design_id": "dsg_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "fit": {
+          "combined_uncertainty_m": 0.0539,
+          "margin_m": null,
+          "outcome": "unverified_fit",
+          "reasons": [
+            "clearance_not_requested"
+          ],
+          "thresholds_version": "Q03-provisional-2026-10-20"
+        },
+        "placement": {
+          "dimensions_m": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "hidden": false,
+          "illustrative_scale": null,
+          "object_source": {
+            "object_id": "obj_01HZYSYNTH0000000000000001",
+            "version": "1"
+          },
+          "placement_id": "plc_01HZYSYNTH0000000000000001",
+          "scale_claim": "reference-supported",
+          "scale_mode": "real",
+          "transform": {
+            "position_m": [
+              1.0,
+              0.0,
+              1.0
+            ],
+            "rotation_deg_y": 90
+          }
+        },
+        "placement_id": "plc_01HZYSYNTH0000000000000001",
+        "revision": 2
+      },
+      "response_status": 201,
+      "wbs": [
+        "HCB-02.1",
+        "HCB-02.2",
+        "HCB-02.3",
+        "HCB-03.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_revision differs (+current_revision)"
+        },
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "viewer or commenter"
+        },
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "non-finite transform"
+        },
+        {
+          "code": "unsupported_scale",
+          "status": 422,
+          "when": "switch to real mode with unknown scale"
+        }
+      ],
+      "expected_version": "body",
+      "id": "C07",
+      "idempotency_key": "none",
+      "method": "PATCH",
+      "path": "/designs/{design_id}/branches/{branch_id}/placements/{placement_id}",
+      "request_example": {
+        "body": {
+          "expected_revision": 2,
+          "transform": {
+            "position_m": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "rotation_deg_y": 90
+          }
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json"
+        },
+        "path_params": {
+          "branch_id": "main",
+          "design_id": "dsg_01HZYSYNTH0000000000000001",
+          "placement_id": "plc_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "fit": {
+          "combined_uncertainty_m": 0.0539,
+          "margin_m": null,
+          "outcome": "unverified_fit",
+          "reasons": [
+            "clearance_not_requested"
+          ],
+          "thresholds_version": "Q03-provisional-2026-10-20"
+        },
+        "placement": {
+          "dimensions_m": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "hidden": false,
+          "illustrative_scale": null,
+          "object_source": {
+            "object_id": "obj_01HZYSYNTH0000000000000001",
+            "version": "1"
+          },
+          "placement_id": "plc_01HZYSYNTH0000000000000001",
+          "scale_claim": "reference-supported",
+          "scale_mode": "real",
+          "transform": {
+            "position_m": [
+              2.0,
+              0.0,
+              1.0
+            ],
+            "rotation_deg_y": 90
+          }
+        },
+        "revision": 3
+      },
+      "response_status": 200,
+      "wbs": [
+        "HCB-02.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_revision differs"
+        },
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "viewer or commenter"
+        }
+      ],
+      "expected_version": "query",
+      "id": "C08",
+      "idempotency_key": "none",
+      "method": "DELETE",
+      "notes": "Removes the occurrence only. Query parameter is expected_revision.",
+      "path": "/designs/{design_id}/branches/{branch_id}/placements/{placement_id}",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "branch_id": "main",
+          "design_id": "dsg_01HZYSYNTH0000000000000001",
+          "placement_id": "plc_01HZYSYNTH0000000000000001"
+        },
+        "query": {
+          "expected_revision": 3
+        }
+      },
+      "response_example": {
+        "revision": 4
+      },
+      "response_status": 200,
+      "wbs": [
+        "HCB-02.3",
+        "HCB-02.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_revision differs"
+        },
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "viewer or commenter"
+        }
+      ],
+      "expected_version": "body",
+      "id": "C09",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/designs/{design_id}/branches/{branch_id}/placements/{placement_id}/duplicate",
+      "request_example": {
+        "body": {
+          "expected_revision": 2,
+          "offset_m": [
+            0.5,
+            0.0,
+            0.0
+          ]
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-dup-0001"
+        },
+        "path_params": {
+          "branch_id": "main",
+          "design_id": "dsg_01HZYSYNTH0000000000000001",
+          "placement_id": "plc_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "placement_id": "plc_01HZYSYNTH0000000000000002",
+        "revision": 3
+      },
+      "response_status": 201,
+      "wbs": [
+        "HCB-02.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "viewer or commenter"
+        },
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "branch or revision not found"
+        }
+      ],
+      "expected_version": "none",
+      "id": "C10",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/designs/{design_id}/alternatives",
+      "request_example": {
+        "body": {
+          "base_revision": 2,
+          "from_branch_id": "main",
+          "name": "Alternative A"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-alt-0001"
+        },
+        "path_params": {
+          "design_id": "dsg_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "base_revision": 2,
+        "branch_id": "brn_01HZYSYNTH0000000000000001",
+        "head_revision": 2,
+        "name": "Alternative A"
+      },
+      "response_status": 201,
+      "wbs": [
+        "HCB-05.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "design, branch or revision not visible"
+        }
+      ],
+      "expected_version": "none",
+      "id": "C11",
+      "idempotency_key": "none",
+      "method": "GET",
+      "notes": "change is added|removed|moved|rotated|scale_changed|hidden_changed.",
+      "path": "/designs/{design_id}/compare",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "design_id": "dsg_01HZYSYNTH0000000000000001"
+        },
+        "query": {
+          "a": "main@1",
+          "b": "main@2"
+        }
+      },
+      "response_example": {
+        "a": {
+          "placements": []
+        },
+        "b": {
+          "placements": [
+            {
+              "dimensions_m": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "hidden": false,
+              "illustrative_scale": null,
+              "object_source": {
+                "object_id": "obj_01HZYSYNTH0000000000000001",
+                "version": "1"
+              },
+              "placement_id": "plc_01HZYSYNTH0000000000000001",
+              "scale_claim": "reference-supported",
+              "scale_mode": "real",
+              "transform": {
+                "position_m": [
+                  1.0,
+                  0.0,
+                  1.0
+                ],
+                "rotation_deg_y": 90
+              }
+            }
+          ]
+        },
+        "differences": [
+          {
+            "change": "added",
+            "placement_id": "plc_01HZYSYNTH0000000000000001"
+          }
+        ]
+      },
+      "response_status": 200,
+      "wbs": [
+        "HCB-05.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_revision differs"
+        },
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "viewer or commenter"
+        }
+      ],
+      "expected_version": "body",
+      "id": "C12",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "Attributable; history kept.",
+      "path": "/designs/{design_id}/branches/{branch_id}/restore",
+      "request_example": {
+        "body": {
+          "expected_revision": 4,
+          "to_revision": 1
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-restore-0001"
+        },
+        "path_params": {
+          "branch_id": "main",
+          "design_id": "dsg_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "restored_from": 1,
+        "revision": 5
+      },
+      "response_status": 201,
+      "wbs": [
+        "HCB-05.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "design, revision or placement not visible"
+        },
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "bad question or margin"
+        }
+      ],
+      "expected_version": "none",
+      "id": "C13",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "outcome verified_fit|unverified_fit|approximate|unknown. Door swing/openings: reasons [opening_clearance_not_supported].",
+      "path": "/designs/{design_id}/fit-assessments",
+      "request_example": {
+        "body": {
+          "branch_id": "main",
+          "clearance_margin_m": 0.3,
+          "placement_id": "plc_01HZYSYNTH0000000000000001",
+          "question": "clearance",
+          "revision": 2
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-fit-0001"
+        },
+        "path_params": {
+          "design_id": "dsg_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "combined_uncertainty_m": 0.0539,
+        "margin_m": 0.3,
+        "outcome": "verified_fit",
+        "reasons": [],
+        "thresholds_version": "Q03-provisional-2026-10-20"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HCB-03.3",
+        "HCB-04"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the owner"
+        }
+      ],
+      "expected_version": "none",
+      "id": "C14",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/designs/{design_id}/shares",
+      "request_example": {
+        "body": {
+          "expires_at": null,
+          "grantee_user_id": "USER-B",
+          "role": "commenter"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-dshare-0001"
+        },
+        "path_params": {
+          "design_id": "dsg_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "role": "commenter",
+        "share_id": "shr_01HZYSYNTH0000000000000003",
+        "state": "invited"
+      },
+      "response_status": 201,
+      "wbs": [
+        "HCB-06.1",
+        "HCB-06.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "share not addressed to the caller"
+        }
+      ],
+      "expected_version": "none",
+      "id": "C15",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "Grantee only. C15 has two paths: accept and decline.",
+      "path": "/design-shares/{share_id}/accept",
+      "request_example": {
+        "body": {},
+        "headers": {
+          "Authorization": "Bearer token-B",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-accept-0001"
+        },
+        "path_params": {
+          "share_id": "shr_01HZYSYNTH0000000000000003"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "state": "accepted"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HCB-06.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "share not addressed to the caller"
+        }
+      ],
+      "expected_version": "none",
+      "id": "C15",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "Grantee only. C15 has two paths: accept and decline.",
+      "path": "/design-shares/{share_id}/decline",
+      "request_example": {
+        "body": {},
+        "headers": {
+          "Authorization": "Bearer token-B",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-decline-0001"
+        },
+        "path_params": {
+          "share_id": "shr_01HZYSYNTH0000000000000003"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "state": "declined"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HCB-06.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the owner"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "C16",
+      "idempotency_key": "none",
+      "method": "PATCH",
+      "path": "/designs/{design_id}/shares/{share_id}",
+      "request_example": {
+        "body": {
+          "expected_version": 2,
+          "role": "editor"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json"
+        },
+        "path_params": {
+          "design_id": "dsg_01HZYSYNTH0000000000000001",
+          "share_id": "shr_01HZYSYNTH0000000000000003"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "record_version": 3,
+        "role": "editor",
+        "share_id": "shr_01HZYSYNTH0000000000000003",
+        "state": "accepted"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HCB-06.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the owner"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "query",
+      "id": "C17",
+      "idempotency_key": "none",
+      "method": "DELETE",
+      "path": "/designs/{design_id}/shares/{share_id}",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "design_id": "dsg_01HZYSYNTH0000000000000001",
+          "share_id": "shr_01HZYSYNTH0000000000000003"
+        },
+        "query": {
+          "expected_version": 3
+        }
+      },
+      "response_example": {
+        "state": "revoked"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HCB-06.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "object not visible to the sharer"
+        }
+      ],
+      "expected_version": "none",
+      "id": "C18",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "Carries no design or home reference.",
+      "path": "/object-shares",
+      "request_example": {
+        "body": {
+          "grantee_user_id": "USER-B",
+          "note": "synthetic",
+          "object_source": {
+            "object_id": "obj_01HZYSYNTH0000000000000001",
+            "version": "1"
+          }
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-objshare-0001"
+        },
+        "path_params": {},
+        "query": {}
+      },
+      "response_example": {
+        "grantee_user_id": "USER-B",
+        "object_share_id": "shr_01HZYSYNTH0000000000000002",
+        "object_source": {
+          "object_id": "obj_01HZYSYNTH0000000000000001",
+          "version": "1"
+        }
+      },
+      "response_status": 201,
+      "wbs": [
+        "HCB-06.1",
+        "HCB-06.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "object share not visible"
+        }
+      ],
+      "expected_version": "none",
+      "id": "C19",
+      "idempotency_key": "none",
+      "method": "GET",
+      "notes": "source_outcome accessible|source_access_denied|withdrawn, re-checked with the grantee's bearer through O13.",
+      "path": "/object-shares/{object_share_id}",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-B"
+        },
+        "path_params": {
+          "object_share_id": "shr_01HZYSYNTH0000000000000002"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "object_source": {
+          "object_id": "obj_01HZYSYNTH0000000000000001",
+          "version": "1"
+        },
+        "source_outcome": "accessible"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HCB-06.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "viewer"
+        },
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "anchor placement not in that revision, or body outside 1-2000 chars"
+        }
+      ],
+      "expected_version": "none",
+      "id": "C20",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/designs/{design_id}/comments",
+      "request_example": {
+        "body": {
+          "anchor": {
+            "kind": "placement",
+            "placement_id": "plc_01HZYSYNTH0000000000000001"
+          },
+          "body": "Synthetic comment",
+          "branch_id": "main",
+          "reply_to": null,
+          "revision": 2
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-comment-0001"
+        },
+        "path_params": {
+          "design_id": "dsg_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "anchor": {
+          "kind": "placement",
+          "placement_id": "plc_01HZYSYNTH0000000000000001"
+        },
+        "author_user_id": "USER-A",
+        "comment_id": "cmt_01HZYSYNTH0000000000000001",
+        "revision": 2,
+        "state": "open"
+      },
+      "response_status": 201,
+      "wbs": [
+        "HCB-07.1",
+        "HCB-07.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "design not visible"
+        }
+      ],
+      "expected_version": "none",
+      "id": "C21",
+      "idempotency_key": "none",
+      "method": "GET",
+      "notes": "anchor_state current|removed_in_later_revision.",
+      "path": "/designs/{design_id}/comments",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "design_id": "dsg_01HZYSYNTH0000000000000001"
+        },
+        "query": {
+          "branch_id": "main",
+          "revision": 4
+        }
+      },
+      "response_example": {
+        "items": [
+          {
+            "anchor": {
+              "kind": "placement",
+              "placement_id": "plc_01HZYSYNTH0000000000000001"
+            },
+            "anchor_state": "removed_in_later_revision",
+            "author_user_id": "USER-A",
+            "body": "Synthetic comment",
+            "comment_id": "cmt_01HZYSYNTH0000000000000001",
+            "revision": 2,
+            "state": "open"
+          }
+        ],
+        "next_cursor": null
+      },
+      "response_status": 200,
+      "wbs": [
+        "HCB-07.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "not owner or editor"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "C22",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/comments/{comment_id}/resolve",
+      "request_example": {
+        "body": {
+          "expected_version": 1
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-resolve-0001"
+        },
+        "path_params": {
+          "comment_id": "cmt_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "state": "resolved"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HCB-07.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "design not visible"
+        }
+      ],
+      "expected_version": "none",
+      "id": "C23",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "Calls H16 and O17 (action view) with the caller's bearer; fails per source, not globally.",
+      "path": "/designs/{design_id}/view-sessions",
+      "request_example": {
+        "body": {
+          "branch_id": "main",
+          "revision": 2
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-vsession-0001"
+        },
+        "path_params": {
+          "design_id": "dsg_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "home": {
+          "outcome": "accessible",
+          "view_grant": {
+            "expires_at": "2026-10-20T00:05:00Z",
+            "view_grant_id": "vgr_01HZYSYNTH0000000000000001"
+          }
+        },
+        "objects": [
+          {
+            "object_id": "obj_01HZYSYNTH0000000000000001",
+            "outcome": "accessible",
+            "use_grant": {
+              "expires_at": "2026-10-20T00:05:00Z",
+              "use_grant_id": "ugr_01HZYSYNTH0000000000000001"
+            },
+            "version": "1"
+          }
+        ]
+      },
+      "response_status": 201,
+      "wbs": [
+        "HCB-02.2",
+        "HCA-02.1"
+      ]
+    }
+  ],
+  "sources": {
+    "home": "{scene_id, version} via H09",
+    "object": "{object_id, version} via O13",
+    "port": "SourceAssetFacts (caller's bearer)",
+    "stores_asset_bytes": false
+  },
+  "status": "DRAFT_SYNTHETIC_NOT_FROZEN",
+  "version": "0.4-draft"
+}

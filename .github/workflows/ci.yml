@@ -28,5 +28,7 @@ jobs:
           python-version: '3.11'
       - name: Verify draft contract fixture checksums
         run: python tools/check_contract_fixtures.py
+      - name: Verify v0.4 draft contract fixture checksums
+        run: python tools/check_contract_fixtures_v0_4.py
       - name: Run unit tests
         run: PYTHONPATH=src:. python -m unittest discover -s tests -v

@@ -1,0 +1,52 @@
+{
+  "callers": [
+    "H16",
+    "O17",
+    "C23"
+  ],
+  "contract": "wisestay.commercial-gate.port",
+  "log_event": {
+    "event": "commercial_gate",
+    "fields": [
+      "action",
+      "outcome",
+      "reason",
+      "resource_ref"
+    ],
+    "never_logged": [
+      "imagery",
+      "coordinates",
+      "tokens"
+    ]
+  },
+  "module": "src/<pkg>/ports/commercial_gate.py",
+  "not_configured": {
+    "class": "NotConfiguredCommercialGate(environment)",
+    "decisions": {
+      "export": {
+        "outcome": "denied",
+        "reason": "export_not_available"
+      },
+      "place": {
+        "outcome": "allowed_no_commercial_policy",
+        "reason": null
+      },
+      "view": {
+        "outcome": "allowed_no_commercial_policy",
+        "reason": null
+      }
+    },
+    "production": "raises ConfigurationError when environment == production"
+  },
+  "outcome": {
+    "outcome": [
+      "allowed_no_commercial_policy",
+      "denied"
+    ],
+    "reason": "str | None"
+  },
+  "producer": "HSB, OSB, HCB (Q10)",
+  "protocol": "CommercialGate.check(action: view|place|export, actor: ActorContext, resource_ref: str) -> GateOutcome",
+  "status": "DRAFT_SYNTHETIC_NOT_FROZEN",
+  "version": "0.4-draft"
+}

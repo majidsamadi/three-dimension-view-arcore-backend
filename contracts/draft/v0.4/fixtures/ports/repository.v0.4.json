@@ -1,0 +1,67 @@
+{
+  "contract": "wisestay.repository.port",
+  "exceptions": {
+    "ConditionFailed": "mapped by the application to version_conflict / already_* codes",
+    "RepositoryUnavailable": "503 dependency_unavailable"
+  },
+  "fake": {
+    "class": "InMemoryRepository",
+    "conditions": "same as live",
+    "helpers": [
+      "fail_next()"
+    ],
+    "ordering": "deterministic",
+    "ttl": "items with now >= ttl_epoch are treated as absent (injectable clock)"
+  },
+  "live_adapter": {
+    "boto3": "lazy low-level client",
+    "class": "DynamoDbRepository(table, client=None)",
+    "cursor": "base64 JSON of LastEvaluatedKey",
+    "writes": "transact_write_items with condition expressions"
+  },
+  "max_transact_ops": 25,
+  "methods": [
+    "get(pk, sk) -> Item | None",
+    "transact(writes: list[Put | Check]) -> None  # all-or-nothing, <= 25 ops; raises ConditionFailed",
+    "query(pk, sk_prefix, *, limit, cursor) -> tuple[list[Item], str | None]",
+    "query_gsi1(gsi1pk, sk_prefix, *, limit, cursor) -> tuple[list[Item], str | None]"
+  ],
+  "module": "src/<pkg>/ports/repository.py",
+  "producer": "HSB, OSB, HCB, WFB (identical names)",
+  "put_version_rule": "expect=version writes version = expected_version + 1, conditional on version = :expected",
+  "status": "DRAFT_SYNTHETIC_NOT_FROZEN",
+  "table": {
+    "data": "M",
+    "gsi1": {
+      "hash": "gsi1pk S",
+      "projection": "ALL",
+      "range": "gsi1sk S"
+    },
+    "pk": "S hash",
+    "sk": "S range",
+    "ttl_attribute": "ttl_epoch",
+    "version": "N"
+  },
+  "types": {
+    "Check": [
+      "pk: str",
+      "sk: str",
+      "expected_version: int"
+    ],
+    "Item": [
+      "pk: str",
+      "sk: str",
+      "version: int",
+      "data: dict",
+      "gsi1pk: str | None = None",
+      "gsi1sk: str | None = None",
+      "ttl_epoch: int | None = None"
+    ],
+    "Put": [
+      "item: Item",
+      "expect: Literal['absent', 'version']",
+      "expected_version: int | None = None"
+    ]
+  },
+  "version": "0.4-draft"
+}

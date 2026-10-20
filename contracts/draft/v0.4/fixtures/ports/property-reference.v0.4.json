@@ -1,0 +1,105 @@
+{
+  "contract": "wisestay.property-reference.port",
+  "examples": [
+    {
+      "fact": {
+        "bookable": false,
+        "observed_at": "2026-10-20T00:00:00Z",
+        "property_id": "PROP-VIRTUAL-1",
+        "property_type": "VIRTUAL",
+        "record_version": 3,
+        "status": "current"
+      },
+      "property_id": "PROP-VIRTUAL-1"
+    },
+    {
+      "fact": {
+        "bookable": false,
+        "observed_at": "2026-10-20T00:00:00Z",
+        "property_id": "PROP-REAL-UNLISTED-1",
+        "property_type": "REAL",
+        "record_version": 2,
+        "status": "current"
+      },
+      "property_id": "PROP-REAL-UNLISTED-1"
+    },
+    {
+      "fact": {
+        "bookable": false,
+        "observed_at": null,
+        "property_id": "PROP-MISSING-1",
+        "property_type": null,
+        "record_version": null,
+        "status": "not_found"
+      },
+      "property_id": "PROP-MISSING-1"
+    }
+  ],
+  "fact": {
+    "bookable": false,
+    "observed_at": "str | None",
+    "property_id": "str",
+    "property_type": [
+      "REAL",
+      "VIRTUAL",
+      null
+    ],
+    "record_version": "int | None",
+    "rules": [
+      "property_type is None unless current",
+      "consumers never derive bookability from this port (Q14)"
+    ],
+    "status": [
+      "current",
+      "not_found",
+      "unavailable"
+    ]
+  },
+  "fake": {
+    "PROP-REAL-UNLISTED-1": {
+      "property_type": "REAL",
+      "record_version": 2
+    },
+    "PROP-VIRTUAL-1": {
+      "property_type": "VIRTUAL",
+      "record_version": 3
+    }
+  },
+  "live_adapter": {
+    "api_root_source": "IDM WEB_APIS[resvanta], supplied as a Terraform variable",
+    "authorization": "Bearer <rv1 machine credential>",
+    "class": "ResvantaHttpPropertyReference(api_root, credential: CredentialSource, transport)",
+    "credential": "SSM SecureString var.resvanta_credential_parameter, read once per cold start; Terraform grants ssm:GetParameter on that ARN and never stores the value",
+    "mapping": [
+      {
+        "response": "200 with property_type in {REAL, VIRTUAL}",
+        "status": "current"
+      },
+      {
+        "response": "401, 403, 404",
+        "status": "not_found"
+      },
+      {
+        "response": "5xx, timeout, malformed body",
+        "status": "unavailable"
+      }
+    ],
+    "request": "GET {api_root}/properties/{property_id}",
+    "response_fields_read": [
+      "id",
+      "property_type",
+      "version"
+    ],
+    "timeout_s": 3
+  },
+  "producer": "wisestay-resvanta (RSV-01/02); consumers HSB, HCB, WFB",
+  "protocol": "PropertyReferencePort.resolve(property_id: str) -> PropertyReferenceFact",
+  "status": "DRAFT_SYNTHETIC_NOT_FROZEN",
+  "unconfigured": "UnconfiguredPropertyReference always returns unavailable",
+  "use": {
+    "HCB C01": "required unless the context is a sandbox",
+    "HSB H01": "current required, else 422 property_not_usable / 503 dependency_unavailable; REAL also requires permission_record_id",
+    "WFB F04": "linked only when current"
+  },
+  "version": "0.4-draft"
+}

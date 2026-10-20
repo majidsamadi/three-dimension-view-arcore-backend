@@ -1,0 +1,1066 @@
+{
+  "absent_routes": [
+    {
+      "expected_status": 404,
+      "method": "POST",
+      "path": "/home-scenes/{scene_id}/jobs",
+      "reason": "HSB-04.2-04.4 cloud jobs DISABLED (Q02)"
+    }
+  ],
+  "api_root": "https://home-scanner.dev.wizestay.com/api/v1",
+  "bff_service": "home-scanner",
+  "capabilities_rules": {
+    "measurement": "scale_claim in {reference-supported, independently-verified}",
+    "missing_regions": "envelope unobserved_regions",
+    "placement": "scale_claim != unknown",
+    "visual_tour": "version validated and has a geometry component"
+  },
+  "contract": "wisestay.home-scanner.api",
+  "example_notes": "Synthetic IDs and users only (USER-A = token-A, USER-B = token-B). request_example is {path_params, query, headers, body}; response_example is the JSON body. envelope_sha256 values of 64 zeros are placeholders for the digest of the service-written envelope bytes. 400 idempotency_key_required, 401 identity_required and 409 idempotency_key_reuse apply to every route as listed in conventions.v0.4.json.",
+  "owner_definition": "scene creator, the capturing account (Q07)",
+  "producer": "three-dimension-view-arcore-backend",
+  "routes": [
+    {
+      "errors": [
+        {
+          "code": "property_not_usable",
+          "status": 422,
+          "when": "property reference port returns not_found (or REAL without permission_record_id)"
+        },
+        {
+          "code": "dependency_unavailable",
+          "status": 503,
+          "when": "property reference port unavailable"
+        },
+        {
+          "code": "occupied_home_publication_disabled",
+          "status": 422,
+          "when": "content_class is occupied"
+        },
+        {
+          "code": "invalid_request",
+          "status": 400,
+          "when": "malformed body, capture_mode not local, or consent missing"
+        }
+      ],
+      "expected_version": "none",
+      "id": "H01",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/home-captures",
+      "request_example": {
+        "body": {
+          "capture_mode": "local",
+          "consent": {
+            "upload_processed_representation": true
+          },
+          "content_class": "synthetic",
+          "kind": "home",
+          "local_draft_ref": "draft-local-1",
+          "permission_record_id": null,
+          "property_id": "PROP-VIRTUAL-1",
+          "purpose": "listing_tour"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-capture-0001"
+        },
+        "path_params": {},
+        "query": {}
+      },
+      "response_example": {
+        "capture_id": "cap_01HZYSYNTH0000000000000001",
+        "created_at": "2026-10-20T00:00:00Z",
+        "kind": "home",
+        "property_id": "PROP-VIRTUAL-1",
+        "property_type": "VIRTUAL",
+        "record_version": 1,
+        "state": "open"
+      },
+      "response_status": 201,
+      "wbs": [
+        "HSB-02.1"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "limit_exceeded",
+          "status": 413,
+          "when": "more than 10 components or a component over 209,715,200 bytes"
+        },
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "envelope draft or component list invalid (reasons[] e.g. raw_capture_not_accepted)"
+        },
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "capture not visible to the caller (wrong account)"
+        }
+      ],
+      "expected_version": "none",
+      "id": "H02",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/home-captures/{capture_id}/uploads",
+      "request_example": {
+        "body": {
+          "components": [
+            {
+              "bytes": 812,
+              "component_id": "main",
+              "media_type": "model/gltf-binary",
+              "role": "geometry",
+              "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+            }
+          ],
+          "envelope": {
+            "asset_id": null,
+            "audience_projection_id": null,
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                -0.5,
+                0.0,
+                -0.5
+              ]
+            },
+            "components": [
+              {
+                "bytes": 812,
+                "component_id": "main",
+                "media_type": "model/gltf-binary",
+                "role": "geometry",
+                "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+              }
+            ],
+            "frame": {
+              "handedness": "right",
+              "units": "metre",
+              "up": "+Y"
+            },
+            "kind": "home",
+            "producer": {
+              "app": "home-scanner",
+              "engine": "three-dimension-view-arcore",
+              "engine_version": "0.2.0"
+            },
+            "provenance": {
+              "capture_mode": "local",
+              "cloud_refinement": false,
+              "content_class": "synthetic",
+              "permission_record_id": null
+            },
+            "scale_claim": "reference-supported",
+            "schema": "wisestay.asset-envelope.v1",
+            "unobserved_regions": [
+              {
+                "bounds_m": {
+                  "max": [
+                    0.5,
+                    1.0,
+                    0.5
+                  ],
+                  "min": [
+                    0.25,
+                    0.75,
+                    0.25
+                  ]
+                },
+                "label": "Not observed",
+                "region_id": "r1"
+              }
+            ],
+            "version": null
+          }
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-upload-0001"
+        },
+        "path_params": {
+          "capture_id": "cap_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "capture_id": "cap_01HZYSYNTH0000000000000001",
+        "components": [
+          {
+            "component_id": "main",
+            "put_headers": {
+              "content-length": "812",
+              "x-amz-checksum-sha256": "wY8ukmDivEVnx9l9E5fzJAaUoMXxS+6w1p6FtXbaCxo="
+            },
+            "put_url": "fake-s3://synthetic-home-scanner-assets/staging/upl_01HZYSYNTH0000000000000001/main?exp=1792455300&sig=SYNTHETIC",
+            "state": "pending",
+            "url_expires_at": "2026-10-20T00:15:00Z"
+          }
+        ],
+        "expires_at": "2026-10-27T00:00:00Z",
+        "record_version": 1,
+        "state": "open",
+        "upload_id": "upl_01HZYSYNTH0000000000000001"
+      },
+      "response_status": 201,
+      "wbs": [
+        "HSB-02.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "upload not visible to the caller"
+        },
+        {
+          "code": "upload_expired",
+          "status": 410,
+          "when": "upload session older than 7 days"
+        }
+      ],
+      "expected_version": "none",
+      "id": "H03",
+      "idempotency_key": "none",
+      "method": "GET",
+      "notes": "No URLs. Component state pending|confirmed|failed with reason digest_mismatch|size_mismatch|null, reconciled by storage HEAD.",
+      "path": "/uploads/{upload_id}",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "upload_id": "upl_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "capture_id": "cap_01HZYSYNTH0000000000000001",
+        "components": [
+          {
+            "component_id": "main",
+            "reason": null,
+            "state": "confirmed"
+          }
+        ],
+        "expires_at": "2026-10-27T00:00:00Z",
+        "record_version": 1,
+        "state": "open",
+        "upload_id": "upl_01HZYSYNTH0000000000000001"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HSB-02.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "invalid_state",
+          "status": 409,
+          "when": "upload finalized or cancelled"
+        },
+        {
+          "code": "upload_expired",
+          "status": 410,
+          "when": "upload session expired"
+        }
+      ],
+      "expected_version": "none",
+      "id": "H04",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "Default component_ids: every non-confirmed component. Never returns URLs for confirmed components.",
+      "path": "/uploads/{upload_id}/component-urls",
+      "request_example": {
+        "body": {
+          "component_ids": [
+            "main"
+          ]
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-urls-0001"
+        },
+        "path_params": {
+          "upload_id": "upl_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "components": [
+          {
+            "component_id": "main",
+            "put_headers": {
+              "content-length": "812",
+              "x-amz-checksum-sha256": "wY8ukmDivEVnx9l9E5fzJAaUoMXxS+6w1p6FtXbaCxo="
+            },
+            "put_url": "fake-s3://synthetic-home-scanner-assets/staging/upl_01HZYSYNTH0000000000000001/main?exp=1792455300&sig=SYNTHETIC",
+            "url_expires_at": "2026-10-20T00:15:00Z"
+          }
+        ]
+      },
+      "response_status": 200,
+      "wbs": [
+        "HSB-02.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "invalid_state",
+          "status": 409,
+          "when": "upload already finalized"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs from the record version"
+        }
+      ],
+      "expected_version": "body",
+      "id": "H05",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "Repeating cancel on a cancelled upload is a no-op 200.",
+      "path": "/uploads/{upload_id}/cancel",
+      "request_example": {
+        "body": {
+          "expected_version": 1
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-cancel-0001"
+        },
+        "path_params": {
+          "upload_id": "upl_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "state": "cancelled"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HSB-02.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "upload_incomplete",
+          "status": 409,
+          "when": "a component is not confirmed (+components)"
+        },
+        {
+          "code": "component_digest_mismatch",
+          "status": 422,
+          "when": "stored bytes digest differs (+components); no version created"
+        },
+        {
+          "code": "component_size_mismatch",
+          "status": 422,
+          "when": "stored size differs (+components); no version created"
+        },
+        {
+          "code": "already_finalized",
+          "status": 409,
+          "when": "new Idempotency-Key after a successful finalize (+scene_id, version)"
+        },
+        {
+          "code": "upload_expired",
+          "status": 410,
+          "when": "upload session expired"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs from the record version"
+        }
+      ],
+      "expected_version": "body",
+      "id": "H06",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "state is validated|quarantined; quarantined carries validation.reasons[] (X.2.1 GLB reason codes). The first finalize creates exactly one immutable version. envelope_sha256 example value is a placeholder.",
+      "path": "/uploads/{upload_id}/finalize",
+      "request_example": {
+        "body": {
+          "expected_version": 1
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-finalize-0001"
+        },
+        "path_params": {
+          "upload_id": "upl_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "envelope_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "scene_id": "scn_01HZYSYNTH0000000000000001",
+        "state": "validated",
+        "validation": {
+          "reasons": []
+        },
+        "version": "1"
+      },
+      "response_status": 201,
+      "wbs": [
+        "HSB-02.4",
+        "HSB-03.1",
+        "HSB-03.3"
+      ]
+    },
+    {
+      "errors": [],
+      "expected_version": "none",
+      "id": "H07",
+      "idempotency_key": "none",
+      "method": "GET",
+      "notes": "The caller's own scenes plus scenes with an active grant.",
+      "path": "/home-scenes",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {},
+        "query": {
+          "limit": 20
+        }
+      },
+      "response_example": {
+        "items": [
+          {
+            "kind": "home",
+            "property_id": "PROP-VIRTUAL-1",
+            "publication_state": "published",
+            "published_version": "1",
+            "role": "owner",
+            "scene_id": "scn_01HZYSYNTH0000000000000001"
+          }
+        ],
+        "next_cursor": null
+      },
+      "response_status": 200,
+      "wbs": [
+        "HSB-03.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "scene not visible to the caller"
+        }
+      ],
+      "expected_version": "none",
+      "id": "H08",
+      "idempotency_key": "none",
+      "method": "GET",
+      "path": "/home-scenes/{scene_id}",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "scene_id": "scn_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "kind": "home",
+        "property_id": "PROP-VIRTUAL-1",
+        "publication": {
+          "published_version": "1",
+          "state": "published",
+          "superseded_versions": []
+        },
+        "record_version": 3,
+        "role": "owner",
+        "scene_id": "scn_01HZYSYNTH0000000000000001",
+        "versions": [
+          {
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                -0.5,
+                0.0,
+                -0.5
+              ]
+            },
+            "capabilities": {
+              "measurement": true,
+              "missing_regions": [
+                {
+                  "bounds_m": {
+                    "max": [
+                      0.5,
+                      1.0,
+                      0.5
+                    ],
+                    "min": [
+                      0.25,
+                      0.75,
+                      0.25
+                    ]
+                  },
+                  "label": "Not observed",
+                  "region_id": "r1"
+                }
+              ],
+              "placement": true,
+              "visual_tour": true
+            },
+            "missing_regions": [
+              {
+                "bounds_m": {
+                  "max": [
+                    0.5,
+                    1.0,
+                    0.5
+                  ],
+                  "min": [
+                    0.25,
+                    0.75,
+                    0.25
+                  ]
+                },
+                "label": "Not observed",
+                "region_id": "r1"
+              }
+            ],
+            "review_state": "approved",
+            "scale_claim": "reference-supported",
+            "state": "validated",
+            "version": "1"
+          }
+        ]
+      },
+      "response_status": 200,
+      "wbs": [
+        "HSB-03.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "scene or version not visible"
+        },
+        {
+          "code": "resource_withdrawn",
+          "status": 410,
+          "when": "scene withdrawn"
+        }
+      ],
+      "expected_version": "none",
+      "id": "H09",
+      "idempotency_key": "none",
+      "method": "GET",
+      "notes": "No URLs. Cross-service read used by HCB and WFB with the end user's bearer.",
+      "path": "/home-scenes/{scene_id}/versions/{version}",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "scene_id": "scn_01HZYSYNTH0000000000000001",
+          "version": "1"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "capabilities": {
+          "measurement": true,
+          "missing_regions": [
+            {
+              "bounds_m": {
+                "max": [
+                  0.5,
+                  1.0,
+                  0.5
+                ],
+                "min": [
+                  0.25,
+                  0.75,
+                  0.25
+                ]
+              },
+              "label": "Not observed",
+              "region_id": "r1"
+            }
+          ],
+          "placement": true,
+          "visual_tour": true
+        },
+        "envelope": {
+          "asset_id": "scn_01HZYSYNTH0000000000000001",
+          "audience_projection_id": "prj_01HZYSYNTH0000000000000001",
+          "bounds_m": {
+            "max": [
+              0.5,
+              1.0,
+              0.5
+            ],
+            "min": [
+              -0.5,
+              0.0,
+              -0.5
+            ]
+          },
+          "components": [
+            {
+              "bytes": 812,
+              "component_id": "main",
+              "media_type": "model/gltf-binary",
+              "role": "geometry",
+              "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+            }
+          ],
+          "frame": {
+            "handedness": "right",
+            "units": "metre",
+            "up": "+Y"
+          },
+          "kind": "home",
+          "producer": {
+            "app": "home-scanner",
+            "engine": "three-dimension-view-arcore",
+            "engine_version": "0.2.0"
+          },
+          "provenance": {
+            "capture_mode": "local",
+            "cloud_refinement": false,
+            "content_class": "synthetic",
+            "permission_record_id": null
+          },
+          "scale_claim": "reference-supported",
+          "schema": "wisestay.asset-envelope.v1",
+          "unobserved_regions": [
+            {
+              "bounds_m": {
+                "max": [
+                  0.5,
+                  1.0,
+                  0.5
+                ],
+                "min": [
+                  0.25,
+                  0.75,
+                  0.25
+                ]
+              },
+              "label": "Not observed",
+              "region_id": "r1"
+            }
+          ],
+          "version": "1"
+        },
+        "kind": "home",
+        "publication_state": "published",
+        "review_state": "approved",
+        "scene_id": "scn_01HZYSYNTH0000000000000001",
+        "state": "validated",
+        "version": "1"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HSB-03.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the owner"
+        },
+        {
+          "code": "invalid_state",
+          "status": 409,
+          "when": "version quarantined or transition not allowed"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "H10",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/home-scenes/{scene_id}/versions/{version}/review",
+      "request_example": {
+        "body": {
+          "decision": "approved",
+          "expected_version": 1,
+          "review_inputs": {
+            "completeness_note": null,
+            "dimension_evidence_note": null,
+            "quality_note": "synthetic"
+          }
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-review-0001"
+        },
+        "path_params": {
+          "scene_id": "scn_01HZYSYNTH0000000000000001",
+          "version": "1"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "review_state": "approved",
+        "version": "1"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HSB-05.1",
+        "HSB-04.1"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the owner"
+        },
+        {
+          "code": "invalid_state",
+          "status": 409,
+          "when": "version not approved"
+        }
+      ],
+      "expected_version": "none",
+      "id": "H11",
+      "idempotency_key": "none",
+      "method": "GET",
+      "notes": "components lists geometry component ids only.",
+      "path": "/home-scenes/{scene_id}/versions/{version}/audience-projection",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "scene_id": "scn_01HZYSYNTH0000000000000001",
+          "version": "1"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "audience": "explicit_grantees",
+        "components": [
+          "main"
+        ],
+        "envelope_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "excluded_categories": [
+          "raw_capture",
+          "diagnostics",
+          "review_model",
+          "source_photos",
+          "notes"
+        ],
+        "projection_id": "prj_01HZYSYNTH0000000000000001",
+        "scene_id": "scn_01HZYSYNTH0000000000000001",
+        "version": "1"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HSB-05.2",
+        "HSB-03.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the owner (unauthorized publish)"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        },
+        {
+          "code": "invalid_state",
+          "status": 409,
+          "when": "version not approved or projection mismatch"
+        },
+        {
+          "code": "occupied_home_publication_disabled",
+          "status": 422,
+          "when": "scene content_class is occupied"
+        }
+      ],
+      "expected_version": "body",
+      "id": "H12",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/home-scenes/{scene_id}/publication",
+      "request_example": {
+        "body": {
+          "expected_version": 2,
+          "projection_id": "prj_01HZYSYNTH0000000000000001",
+          "version": "1"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-publish-0001"
+        },
+        "path_params": {
+          "scene_id": "scn_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "published_version": "1",
+        "record_version": 3,
+        "state": "published",
+        "superseded_version": null
+      },
+      "response_status": 200,
+      "wbs": [
+        "HSB-05.3",
+        "HSB-05.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the owner"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "H13",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/home-scenes/{scene_id}/withdrawal",
+      "request_example": {
+        "body": {
+          "expected_version": 3,
+          "reason": "synthetic withdrawal"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-withdraw-0001"
+        },
+        "path_params": {
+          "scene_id": "scn_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "new_access_blocked_at": "2026-10-20T00:00:00Z",
+        "outstanding_view_grants_expire_by": "2026-10-20T00:05:00Z",
+        "state": "withdrawn"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HSB-05.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the owner"
+        },
+        {
+          "code": "resource_withdrawn",
+          "status": 410,
+          "when": "scene withdrawn"
+        },
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "expires_at more than 90 days ahead"
+        }
+      ],
+      "expected_version": "none",
+      "id": "H14",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/home-scenes/{scene_id}/grants",
+      "request_example": {
+        "body": {
+          "expires_at": "2026-11-19T00:00:00Z",
+          "grantee_user_id": "USER-B"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-grant-0001"
+        },
+        "path_params": {
+          "scene_id": "scn_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "expires_at": "2026-11-19T00:00:00Z",
+        "grant_id": "grt_01HZYSYNTH0000000000000001",
+        "grantee_user_id": "USER-B",
+        "state": "active"
+      },
+      "response_status": 201,
+      "wbs": [
+        "HSB-06.1"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the owner"
+        },
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "grant not found"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "query",
+      "id": "H15",
+      "idempotency_key": "none",
+      "method": "DELETE",
+      "path": "/home-scenes/{scene_id}/grants/{grant_id}",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "grant_id": "grt_01HZYSYNTH0000000000000001",
+          "scene_id": "scn_01HZYSYNTH0000000000000001"
+        },
+        "query": {
+          "expected_version": 1
+        }
+      },
+      "response_example": {
+        "grant_id": "grt_01HZYSYNTH0000000000000001",
+        "state": "revoked"
+      },
+      "response_status": 200,
+      "wbs": [
+        "HSB-06.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "no grant and not the owner"
+        },
+        {
+          "code": "grant_expired",
+          "status": 403,
+          "when": "grant expired"
+        },
+        {
+          "code": "grant_revoked",
+          "status": 403,
+          "when": "grant revoked"
+        },
+        {
+          "code": "resource_withdrawn",
+          "status": 410,
+          "when": "scene withdrawn"
+        },
+        {
+          "code": "invalid_state",
+          "status": 409,
+          "when": "not published (grantees)"
+        }
+      ],
+      "expected_version": "none",
+      "id": "H16",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "version defaults to the published version. Components are the audience projection only. expires_at = now + 300 s.",
+      "path": "/home-scenes/{scene_id}/view-grants",
+      "request_example": {
+        "body": {
+          "version": "1"
+        },
+        "headers": {
+          "Authorization": "Bearer token-B",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-view-0001"
+        },
+        "path_params": {
+          "scene_id": "scn_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "commercial_outcome": "allowed_no_commercial_policy",
+        "components": [
+          {
+            "component_id": "main",
+            "get_url": "fake-s3://synthetic-home-scanner-assets/versions/c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a?exp=1792454700&sig=SYNTHETIC"
+          }
+        ],
+        "envelope_url": "fake-s3://synthetic-home-scanner-assets/versions/envelopes/scn_01HZYSYNTH0000000000000001/1.json?exp=1792454700&sig=SYNTHETIC",
+        "expires_at": "2026-10-20T00:05:00Z",
+        "scene_id": "scn_01HZYSYNTH0000000000000001",
+        "version": "1",
+        "view_grant_id": "vgr_01HZYSYNTH0000000000000001"
+      },
+      "response_status": 201,
+      "wbs": [
+        "HSB-06.2",
+        "HSB-06.3"
+      ]
+    }
+  ],
+  "status": "DRAFT_SYNTHETIC_NOT_FROZEN",
+  "version": "0.4-draft"
+}

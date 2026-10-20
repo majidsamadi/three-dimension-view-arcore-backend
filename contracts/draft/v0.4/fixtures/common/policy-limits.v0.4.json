@@ -1,0 +1,234 @@
+{
+  "bounds_rules": {
+    "finite": true,
+    "glb_position_tolerance_m": 0.01,
+    "min_le_max": true
+  },
+  "contract": "wisestay.common.policy-limits",
+  "limits": {
+    "api_throttle_burst": {
+      "source": "Q09",
+      "status": "PROVISIONAL",
+      "unit": "request",
+      "value": 20
+    },
+    "api_throttle_rate_rps": {
+      "source": "Q09",
+      "status": "PROVISIONAL",
+      "unit": "request/second",
+      "value": 10
+    },
+    "audience_grant_max_lifetime_s": {
+      "source": "X.2",
+      "status": "PROVISIONAL",
+      "unit": "second",
+      "value": 7776000
+    },
+    "availability_valid_for_s_max": {
+      "source": "X.5",
+      "status": "PROVISIONAL",
+      "unit": "second",
+      "value": 604800
+    },
+    "bounds_extent_home_m": {
+      "source": "X.2.1",
+      "status": "PROVISIONAL",
+      "unit": "metre",
+      "value": 200
+    },
+    "bounds_extent_object_m": {
+      "source": "X.2.1",
+      "status": "PROVISIONAL",
+      "unit": "metre",
+      "value": 20
+    },
+    "bounds_extent_shop_m": {
+      "source": "X.2.1",
+      "status": "PROVISIONAL",
+      "unit": "metre",
+      "value": 500
+    },
+    "bytes_per_component": {
+      "source": "Q09",
+      "status": "PROVISIONAL",
+      "unit": "bytes",
+      "value": 209715200
+    },
+    "catalog_import_rows_max": {
+      "source": "X.5",
+      "status": "PROVISIONAL",
+      "unit": "count",
+      "value": 500
+    },
+    "comment_body_chars_max": {
+      "source": "X.4",
+      "status": "PROVISIONAL",
+      "unit": "count",
+      "value": 2000
+    },
+    "comment_body_chars_min": {
+      "source": "X.4",
+      "status": "PROVISIONAL",
+      "unit": "count",
+      "value": 1
+    },
+    "components_per_upload": {
+      "source": "Q09",
+      "status": "PROVISIONAL",
+      "unit": "count",
+      "value": 10
+    },
+    "envelope_json_bytes": {
+      "source": "X.2.1",
+      "status": "PROVISIONAL",
+      "unit": "bytes",
+      "value": 65536
+    },
+    "glb_accessors": {
+      "source": "X.2.1",
+      "status": "PROVISIONAL",
+      "unit": "count",
+      "value": 20000
+    },
+    "glb_json_chunk_bytes": {
+      "source": "X.2.1",
+      "status": "PROVISIONAL",
+      "unit": "bytes",
+      "value": 4194304
+    },
+    "glb_meshes": {
+      "source": "X.2.1",
+      "status": "PROVISIONAL",
+      "unit": "count",
+      "value": 2000
+    },
+    "glb_nodes": {
+      "source": "X.2.1",
+      "status": "PROVISIONAL",
+      "unit": "count",
+      "value": 10000
+    },
+    "glb_position_vertices_total": {
+      "source": "X.2.1",
+      "status": "PROVISIONAL",
+      "unit": "count",
+      "value": 5000000
+    },
+    "illustrative_scale_max": {
+      "source": "X.4",
+      "status": "PROVISIONAL",
+      "unit": "ratio",
+      "value": 10
+    },
+    "illustrative_scale_min": {
+      "source": "X.4",
+      "status": "PROVISIONAL",
+      "unit": "ratio",
+      "value": 0.1
+    },
+    "lambda_reserved_concurrency": {
+      "source": "Q09",
+      "status": "PROVISIONAL",
+      "unit": "count",
+      "value": 5
+    },
+    "lambda_timeout_s": {
+      "source": "X.10",
+      "status": "PROVISIONAL",
+      "unit": "second",
+      "value": 28
+    },
+    "log_retention_days": {
+      "source": "Q08",
+      "status": "PROVISIONAL",
+      "unit": "day",
+      "value": 14
+    },
+    "object_dimension_max_m": {
+      "source": "X.3",
+      "status": "PROVISIONAL",
+      "unit": "metre",
+      "value": 20
+    },
+    "placement_position_abs_max_m": {
+      "source": "X.4",
+      "status": "PROVISIONAL",
+      "unit": "metre",
+      "value": 500
+    },
+    "presigned_get_lifetime_s": {
+      "source": "Q15",
+      "status": "PROVISIONAL",
+      "unit": "second",
+      "value": 300
+    },
+    "presigned_put_lifetime_s": {
+      "source": "Q15",
+      "status": "PROVISIONAL",
+      "unit": "second",
+      "value": 900
+    },
+    "query_prefix_expiry_days": {
+      "source": "Q08",
+      "status": "PROVISIONAL",
+      "unit": "day",
+      "value": 1
+    },
+    "quick_query_retention_s": {
+      "source": "Q08",
+      "status": "PROVISIONAL",
+      "unit": "second",
+      "value": 86400
+    },
+    "rejected_prefix_expiry_days": {
+      "source": "Q08",
+      "status": "PROVISIONAL",
+      "unit": "day",
+      "value": 30
+    },
+    "staging_prefix_expiry_days": {
+      "source": "Q08",
+      "status": "PROVISIONAL",
+      "unit": "day",
+      "value": 7
+    },
+    "upload_session_expiry_s": {
+      "source": "Q08",
+      "status": "PROVISIONAL",
+      "unit": "second",
+      "value": 604800
+    },
+    "use_grant_lifetime_s": {
+      "source": "Q15",
+      "status": "PROVISIONAL",
+      "unit": "second",
+      "value": 300
+    },
+    "view_grant_lifetime_s": {
+      "source": "Q15",
+      "status": "PROVISIONAL",
+      "unit": "second",
+      "value": 300
+    }
+  },
+  "producer": "shared (S0 transcription of plan X.1 limits; Q03/Q08/Q09)",
+  "q03_provisional": {
+    "object_floor_m": 0.01,
+    "object_fraction": 0.03,
+    "object_uncertainty": "max(0.01 m, 3 %) per axis",
+    "room_floor_m": 0.05,
+    "room_fraction": 0.02,
+    "room_uncertainty": "max(0.05 m, 2 %)",
+    "status": "PROVISIONAL",
+    "thresholds_version": "Q03-provisional-2026-10-20",
+    "used_by": [
+      "HCB-04"
+    ]
+  },
+  "quick_query_retention": {
+    "dynamodb_ttl_attribute": "ttl_epoch",
+    "s3_backstop": "query/ 1-day expiry"
+  },
+  "status": "DRAFT_SYNTHETIC_NOT_FROZEN",
+  "version": "0.4-draft"
+}

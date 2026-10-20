@@ -1,0 +1,211 @@
+{
+  "contract": "wisestay.scanner-lifecycle.interface",
+  "events": [
+    "state",
+    "error"
+  ],
+  "finish_outcomes": [
+    "finished",
+    "cancelled",
+    "failed"
+  ],
+  "interface_version": "wisestay.scanner-lifecycle/1.0.0-draft",
+  "internal_events": [
+    "prepare_rejected",
+    "finish_succeeded",
+    "finish_failed",
+    "runtime_failed"
+  ],
+  "invalid_transition": "SpatialError('INVALID_STATE')",
+  "methods": [
+    "prepare",
+    "start",
+    "pause",
+    "resume",
+    "finish",
+    "cancel",
+    "recover",
+    "dispose",
+    "on"
+  ],
+  "notes": "prepare_rejected: prepare() resolved with ok:false (missing capability or aborted); dispose from disposed is an idempotent no-op.",
+  "pending_work": "PendingWorkTracker / OnceResourceCleanup (sdk/src/pending-work.ts)",
+  "producer": "three-dimension-view-arcore (sdk/src/lifecycle.ts)",
+  "recover_never": "resumed",
+  "recover_outcomes": [
+    "inspect-only",
+    "nothing-to-recover",
+    "failed"
+  ],
+  "recover_state_rule": "recover never changes state",
+  "states": [
+    "created",
+    "prepared",
+    "running",
+    "paused",
+    "finishing",
+    "finished",
+    "cancelled",
+    "failed",
+    "disposed"
+  ],
+  "status": "DRAFT_SYNTHETIC_NOT_FROZEN",
+  "transitions": [
+    {
+      "from": "created",
+      "op": "prepare",
+      "to": "prepared"
+    },
+    {
+      "from": "created",
+      "op": "prepare_rejected",
+      "to": "created"
+    },
+    {
+      "from": "prepared",
+      "op": "start",
+      "to": "running"
+    },
+    {
+      "from": "running",
+      "op": "pause",
+      "to": "paused"
+    },
+    {
+      "from": "paused",
+      "op": "resume",
+      "to": "running"
+    },
+    {
+      "from": "running",
+      "op": "finish",
+      "to": "finishing"
+    },
+    {
+      "from": "paused",
+      "op": "finish",
+      "to": "finishing"
+    },
+    {
+      "from": "finishing",
+      "op": "finish_succeeded",
+      "to": "finished"
+    },
+    {
+      "from": "finishing",
+      "op": "finish_failed",
+      "to": "failed"
+    },
+    {
+      "from": "created",
+      "op": "cancel",
+      "to": "cancelled"
+    },
+    {
+      "from": "prepared",
+      "op": "cancel",
+      "to": "cancelled"
+    },
+    {
+      "from": "running",
+      "op": "cancel",
+      "to": "cancelled"
+    },
+    {
+      "from": "paused",
+      "op": "cancel",
+      "to": "cancelled"
+    },
+    {
+      "from": "finishing",
+      "op": "cancel",
+      "to": "cancelled"
+    },
+    {
+      "from": "prepared",
+      "op": "runtime_failed",
+      "to": "failed"
+    },
+    {
+      "from": "running",
+      "op": "runtime_failed",
+      "to": "failed"
+    },
+    {
+      "from": "paused",
+      "op": "runtime_failed",
+      "to": "failed"
+    },
+    {
+      "from": "finishing",
+      "op": "runtime_failed",
+      "to": "failed"
+    },
+    {
+      "from": "created",
+      "op": "recover",
+      "to": "created"
+    },
+    {
+      "from": "finished",
+      "op": "recover",
+      "to": "finished"
+    },
+    {
+      "from": "cancelled",
+      "op": "recover",
+      "to": "cancelled"
+    },
+    {
+      "from": "failed",
+      "op": "recover",
+      "to": "failed"
+    },
+    {
+      "from": "created",
+      "op": "dispose",
+      "to": "disposed"
+    },
+    {
+      "from": "prepared",
+      "op": "dispose",
+      "to": "disposed"
+    },
+    {
+      "from": "running",
+      "op": "dispose",
+      "to": "disposed"
+    },
+    {
+      "from": "paused",
+      "op": "dispose",
+      "to": "disposed"
+    },
+    {
+      "from": "finishing",
+      "op": "dispose",
+      "to": "disposed"
+    },
+    {
+      "from": "finished",
+      "op": "dispose",
+      "to": "disposed"
+    },
+    {
+      "from": "cancelled",
+      "op": "dispose",
+      "to": "disposed"
+    },
+    {
+      "from": "failed",
+      "op": "dispose",
+      "to": "disposed"
+    },
+    {
+      "from": "disposed",
+      "op": "dispose",
+      "to": "disposed"
+    }
+  ],
+  "version": "0.4-draft"
+}
