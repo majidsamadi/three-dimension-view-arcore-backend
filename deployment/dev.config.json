@@ -1,0 +1,35 @@
+{
+  "contract": "wisestay.3d.backend-deployment-config.v1",
+  "repository": "majidsamadi/three-dimension-view-arcore-backend",
+  "account": "511831442607",
+  "region": "ap-southeast-1",
+  "environment": "dev",
+  "slug": "home-scanner",
+  "deploy_role_arn": "arn:aws:iam::511831442607:role/wisestay/deploy/dev/wisestay-dev-home-scanner-deploy",
+  "deploy_session_prefix": "arn:aws:sts::511831442607:assumed-role/wisestay-dev-home-scanner-deploy/",
+  "state": {
+    "bucket": "wisestay-state-511831442607-ap-southeast-1",
+    "key": "wisestay/dev/three-dimension-view-arcore-backend/application.tfstate",
+    "region": "ap-southeast-1",
+    "kms_key_id": "arn:aws:kms:ap-southeast-1:511831442607:key/e231f0cc-aa40-4f7d-a102-b43e380d2b25"
+  },
+  "resources": {
+    "function": "wisestay-dev-home-scanner-api",
+    "table": "wisestay-dev-home-scanner",
+    "bucket": "wisestay-dev-home-scanner-assets-511831442607",
+    "runtime_role": "wisestay-dev-home-scanner-runtime",
+    "runtime_policy": "wisestay-dev-home-scanner-api-least-privilege",
+    "log_group": "/aws/lambda/wisestay-dev-home-scanner-api",
+    "hosted_zone_id": "Z03297312TXBV0HYHORFM"
+  },
+  "reserved_concurrency": 5,
+  "unreserved_concurrency_floor": 100,
+  "api_host": "home-scanner.dev.wizestay.com",
+  "api_root": "https://home-scanner.dev.wizestay.com/api/v1",
+  "web_origin": "https://home-scanner.wizestay.com",
+  "sibling_api_roots": {},
+  "resvanta_api_root": "https://1noccvrfkk.execute-api.ap-southeast-1.amazonaws.com/v1",
+  "resvanta_credential_parameter": "",
+  "lambda_package": "dist/home-scanner-lambda.zip",
+  "smoke_path": "/home-scenes"
+}

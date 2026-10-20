@@ -35,3 +35,21 @@ Source: WBS §6 "Decisions to make later" (Q01–Q16). This file records the pro
 `contracts/draft/v0.3` stays DRAFT / SYNTHETIC — NOT FROZEN until Q01, Q03, Q04, Q05 and Q06 are answered by the owner. The skip list is produced by `tests/test_contract_fixtures_v0_3.py` (`test_draft_every_example_is_mapped_or_explicitly_skipped`).
 
 `contracts/draft/v0.4` also stays DRAFT / SYNTHETIC — NOT FROZEN until the owner reviews the delegated Q01, Q03, Q04, Q05 and Q06 answers.
+
+## Wave 3 (2026-10-20): dev deploy pipeline
+
+- Pipeline status: implemented, locally verified; dev deployment pending publish. Nothing is deployed until a green `ci.yml` `deploy` run, its `deployment-receipt-<sha>` artifact (`result: "deployed"`) and a passing smoke all exist. Pipeline details: [infra/README.md](../infra/README.md#wave-3-deployment).
+- Q15 (DELEGATED-PROVISIONAL), used as: per-repo application stack in account 511831442607 / ap-southeast-1 / dev, state key `wisestay/dev/three-dimension-view-arcore-backend/application.tfstate`, API `https://home-scanner.dev.wizestay.com/api/v1`. The deploy role, runtime permissions boundary and web hosting are owned by `wisestay-infrastructure` `applications/three-d-dev`. This is wave 3 plan refinement Q15-R1 (D2): 3D web hosting lives there, not in `applications/websites` `local.sites`.
+- Q09 (DELEGATED-PROVISIONAL), used as: request-driven only, reserved concurrency 5, stage throttling 10 rps / burst 20, `CostAllocation=wisestay-dev-3d` tag. The deploy holds (`ACCOUNT_CONCURRENCY_FLOOR`) rather than drop the reservation; changing that needs the owner.
+- Q14 (DELEGATED-PROVISIONAL), expected effect: no Resvanta `rv1` credential exists, so `resvanta_credential_parameter` is empty and the service composes `UnconfiguredPropertyReference`. Home capture admission (H01) is expected to stay BLOCKED in dev (`property_not_usable` / `dependency_unavailable`).
+- Post-deploy smoke checks only that the token-protected route H07 answers 401 `application/problem+json` without a token. Signed-in journeys need owner-provided synthetic test identities; until they exist, those journeys are reported as BLOCKED.
+- Data: synthetic only (Q07 first slice).
+
+### Wave 3 integration (`int`, 2026-10-20)
+- Web-session registration: User Management `clients/web-session/web-session.mjs` lists `home-scanner` at `https://home-scanner.wizestay.com`, allowed to call only the `home-scanner` API (IDM commit `5b08595`, branch `feature/3d-wave3`).
+- Dev integration suite: `three-dimension-view-arcore-backend` `.github/workflows/dev-integration.yml` (manual dispatch on `main`; `contents: read`, no OIDC token, no AWS credentials). Its report records each journey as `passed`, `failed` or `blocked` with the exact reason. Only a `passed` journey may later be called `paired-integrated (dev)`.
+- Expected first run: `home_scanner` BLOCKED at H01 capture admission (`dependency_unavailable`/`property_not_usable`, Q14: no Resvanta `rv1` credential), and therefore `composer_home_placement` BLOCKED too.
+- Test identities (needs a human): two synthetic accounts created at `https://user.wizestay.com` with confirmed e-mail and TOTP, stored as the six `WS3D_IT_*` repository secrets of `three-dimension-view-arcore-backend`. No User Management mechanism creates them automatically (MFA required, no CI `AdminCreateUser`). Until they exist, the suite reports `BLOCKED_TEST_IDENTITIES_ABSENT` with the missing secret names. Steps: `three-dimension-view-arcore-backend` `docs/DEV_INTEGRATION.md`.
+- Cross-repo consistency check (role names/ARNs, OIDC subjects and repository ids, state keys, domains, API URLs, tags, activation and approval ids, IDM registration and vendored client bytes): 293 of 293 checks match; no change was needed.
+- Recorded contract divergence (not edited, because shared fixtures are read-only): `contracts/draft/v0.4/fixtures/ports/identity.v0.4.json` still lists `terraform_variables: ["central_issuer", "central_client_id"]`. Under D7 the client id is resolved at plan time by the exact name `wisestay-accounts-dev-web`; the `CENTRAL_CLIENT_ID` Lambda variable is unchanged. The fixture follows in a later v0.4.1 set copied to every repository.
+- Status: dev deploy pipeline configured; not dev-deployed (no deploy receipt or smoke result exists yet). Synthetic data only (Q07).

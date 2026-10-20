@@ -1,0 +1,65 @@
+name: Dev integration journeys (synthetic, manual)
+
+# Wave 3 plan §6.5.3 (D9). Manual dispatch on main only. The job holds no AWS credentials
+# and requests no OIDC token: it calls the public dev endpoints and Cognito's public
+# USER_SRP_AUTH sign-in for two owner-provided synthetic accounts (repository secrets).
+# Because no AWS identity is assumed there is no caller identity to check; the suite pins
+# the dev pool issuer, the central client name and the four dev API hosts instead.
+# Missing secrets are reported as BLOCKED_TEST_IDENTITIES_ABSENT and the run exits non-zero.
+# The report (artifact) never contains tokens or secrets. Synthetic data only (Q07).
+on:
+  workflow_dispatch:
+    inputs:
+      expected_revisions:
+        description: 'Optional JSON map of site to expected release.json revision, e.g. {"home-scanner":"<main sha>"}'
+        type: string
+        required: false
+        default: ''
+      property_id:
+        description: Synthetic VIRTUAL Resvanta property id for Home Scanner admission and the Finder shop
+        type: string
+        required: false
+        default: PROP-VIRTUAL-1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wisestay-dev-integration
+  cancel-in-progress: false
+
+jobs:
+  integration:
+    name: Cross-service journeys against dev (synthetic data only)
+    if: github.repository == 'majidsamadi/three-dimension-view-arcore-backend' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Run the dev integration journeys
+        env:
+          WS3D_IT_A_USERNAME: ${{ secrets.WS3D_IT_A_USERNAME }}
+          WS3D_IT_A_PASSWORD: ${{ secrets.WS3D_IT_A_PASSWORD }}
+          WS3D_IT_A_TOTP_SECRET: ${{ secrets.WS3D_IT_A_TOTP_SECRET }}
+          WS3D_IT_B_USERNAME: ${{ secrets.WS3D_IT_B_USERNAME }}
+          WS3D_IT_B_PASSWORD: ${{ secrets.WS3D_IT_B_PASSWORD }}
+          WS3D_IT_B_TOTP_SECRET: ${{ secrets.WS3D_IT_B_TOTP_SECRET }}
+          WS3D_IT_RUN_ID: ${{ github.run_id }}
+          WS3D_IT_EXPECTED_REVISIONS: ${{ inputs.expected_revisions }}
+          WS3D_IT_PROPERTY_ID: ${{ inputs.property_id }}
+        run: python -m tools.dev_integration.run --report dist/dev-integration-report.json
+      - name: Upload the integration report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: dev-integration-${{ github.sha }}-${{ github.run_id }}
+          path: dist/dev-integration-report.json
+          retention-days: 30
+          if-no-files-found: error

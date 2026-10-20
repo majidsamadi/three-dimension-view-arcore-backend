@@ -106,11 +106,6 @@ resource "aws_lambda_permission" "api_gateway" {
   depends_on    = [terraform_data.guard]
 }
 
-data "aws_route53_zone" "public" {
-  name         = var.hosted_zone_name
-  private_zone = false
-}
-
 resource "aws_acm_certificate" "api" {
   domain_name       = var.api_hostname
   validation_method = "DNS"
@@ -131,7 +126,7 @@ resource "aws_route53_record" "certificate_validation" {
     }
   }
 
-  zone_id         = data.aws_route53_zone.public.zone_id
+  zone_id         = local.zone_id
   name            = each.value.name
   type            = each.value.type
   records         = [each.value.record]
@@ -166,7 +161,7 @@ resource "aws_api_gateway_base_path_mapping" "api" {
 }
 
 resource "aws_route53_record" "api" {
-  zone_id = data.aws_route53_zone.public.zone_id
+  zone_id = local.zone_id
   name    = aws_api_gateway_domain_name.api.domain_name
   type    = "A"
 

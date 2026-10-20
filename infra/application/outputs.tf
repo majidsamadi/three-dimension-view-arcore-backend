@@ -3,6 +3,10 @@ output "api_root" {
   value       = "https://${var.api_hostname}/api/v1"
 }
 
+output "function_name" {
+  value = aws_lambda_function.api.function_name
+}
+
 output "rest_api_id" {
   value = aws_api_gateway_rest_api.api.id
 }
