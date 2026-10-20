@@ -1,19 +1,15 @@
 name: Verify Home backend boundary
-
 on:
   push:
     branches:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
-
 permissions:
   contents: read
-
 concurrency:
   group: home-backend-verify-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   boundary:
     name: Python boundary and draft contract fixture check
@@ -32,3 +28,21 @@ jobs:
         run: python tools/check_contract_fixtures_v0_4.py
       - name: Run unit tests
         run: PYTHONPATH=src:. python -m unittest discover -s tests -v
+      - name: Build the deterministic Lambda package
+        run: python tools/build_lambda.py
+  terraform:
+    name: Terraform fmt and validate (no credentials, no plan)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install pinned Terraform 1.15.8
+        run: bash tools/install_terraform.sh "$RUNNER_TEMP/terraform-bin"
+      - name: Format check
+        run: '"$RUNNER_TEMP/terraform-bin/terraform" -chdir=infra/application fmt -check -recursive'
+      - name: Init without backend
+        run: '"$RUNNER_TEMP/terraform-bin/terraform" -chdir=infra/application init -backend=false -input=false -lockfile=readonly'
+      - name: Validate
+        run: '"$RUNNER_TEMP/terraform-bin/terraform" -chdir=infra/application validate -no-color'
