@@ -1,0 +1,55 @@
+{
+  "contract": "wisestay.object-storage.port",
+  "fake": {
+    "class": "InMemoryObjectStorage",
+    "helpers": [
+      "client_upload(key, data, claimed_sha256_b64) refuses a checksum mismatch",
+      "tamper(key, data)",
+      "fail_next(op)"
+    ],
+    "url_format": "fake-s3://<bucket>/<key>?exp=<epoch>&sig=<hmac>"
+  },
+  "key_layout": {
+    "envelopes": "versions/envelopes/<asset_id>/<version>.json",
+    "query": "query/<query_id> (WFB; unused in wave 2)",
+    "rejected": "rejected/<upload_id>/<component_id>",
+    "staging": "staging/<upload_id>/<component_id>",
+    "versions": "versions/<sha256 hex>"
+  },
+  "live_adapter": {
+    "boto3": "lazy import in constructor",
+    "class": "S3ObjectStorage(bucket, client=None)",
+    "head": "head_object(ChecksumMode='ENABLED')",
+    "presign_put": "generate_presigned_url('put_object', Params={Bucket, Key, ChecksumSHA256, ContentLength}, ExpiresIn)",
+    "put_headers": [
+      "x-amz-checksum-sha256",
+      "content-length"
+    ]
+  },
+  "methods": [
+    "presign_put(key, *, sha256_b64, content_length, expires_s=900) -> PresignedPut",
+    "presign_get(key, *, expires_s=300) -> str",
+    "head(key) -> StoredObject | None  # ChecksumMode=ENABLED",
+    "read_range(key, start, end_inclusive) -> bytes",
+    "copy(source_key, dest_key) -> None",
+    "put_bytes(key, data, *, content_type) -> None  # service-written envelopes only",
+    "delete(key) -> None"
+  ],
+  "module": "src/<pkg>/ports/object_storage.py",
+  "producer": "HSB, OSB, WFB (identical names; HCB has no bucket)",
+  "status": "DRAFT_SYNTHETIC_NOT_FROZEN",
+  "types": {
+    "PresignedPut": [
+      "url: str",
+      "headers: dict[str, str]",
+      "expires_at: str"
+    ],
+    "StoredObject": [
+      "key: str",
+      "bytes: int",
+      "checksum_sha256_b64: str | None"
+    ]
+  },
+  "version": "0.4-draft",
+  "versions_rule": "content-addressed, immutable; copied from staging only after validation"
+}

@@ -1,0 +1,9 @@
+[project]
+name = "wisestay-home-backend-boundary"
+version = "0.1.0"
+description = "WiseStay Home Scanner internal reference-boundary preparation"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.unittest]
+start-directory = "tests"

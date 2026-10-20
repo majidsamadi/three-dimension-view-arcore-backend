@@ -1,0 +1,66 @@
+{
+  "fixture_id": "B-RFX-06",
+  "kind": "independently prepared semantic/review examples; not deployed data/API schema",
+  "b_case_ids": [
+    "B-P03-13",
+    "B-P03-14",
+    "B-P03-17"
+  ],
+  "reviewers_requested": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G"
+  ],
+  "source": "Retained B v0.1 and coordinator-relayed summaries from this cycle",
+  "status": "PREPARED_NOT_EXECUTED_NOT_ACCEPTED",
+  "coordinate_convention": null,
+  "codec": null,
+  "protection_scheme": null,
+  "physical_measurement_receipts": [],
+  "examples": [
+    {
+      "example": "restored metadata after withdrawal",
+      "restored_record": "T1",
+      "current_authority": "withdrawn-at-T2",
+      "draft_expected": "Restore does not revive new access."
+    },
+    {
+      "example": "wrong resource",
+      "grant_scope": "H-A@7 view",
+      "requested": "H-B@7 view",
+      "draft_expected": "Deny without leaking private existence or relying on paid client flags."
+    },
+    {
+      "example": "four profiles",
+      "profile_labels": [
+        "native research diagnostics",
+        "SDK experimental protected checkpoint",
+        "Vue legacy archive/import",
+        "future controlled service asset"
+      ],
+      "draft_expected": "No interchangeability or universal key assumption."
+    },
+    {
+      "example": "separately atomic native pair",
+      "mesh_label": "NATIVE-MESH-V1",
+      "metadata_label": "NATIVE-METADATA-V2",
+      "draft_expected": "Do not claim a pair transaction; preserve originals and show recovery."
+    },
+    {
+      "example": "crop is not byte privacy",
+      "view": "cropped",
+      "backup_input": "may contain uncropped geometry",
+      "draft_expected": "Check allowed/excluded projection bytes; never infer privacy from crop display."
+    },
+    {
+      "example": "selected upload versus raw input",
+      "selected_output_label": "RESULT-A",
+      "raw_input_consent": null,
+      "draft_expected": "No mandatory cloud or implicit raw upload."
+    }
+  ]
+}

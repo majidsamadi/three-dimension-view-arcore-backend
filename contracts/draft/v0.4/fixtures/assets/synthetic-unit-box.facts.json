@@ -1,0 +1,20 @@
+{
+  "bounds_m": {
+    "max": [
+      0.5,
+      1.0,
+      0.5
+    ],
+    "min": [
+      -0.5,
+      0.0,
+      -0.5
+    ]
+  },
+  "bytes": 812,
+  "node_names": [
+    "unit-box"
+  ],
+  "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a",
+  "triangles": 12
+}

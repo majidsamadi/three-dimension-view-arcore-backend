@@ -1,0 +1,6 @@
+bucket       = "wisestay-state-511831442607-ap-southeast-1"
+key          = "wisestay/dev/three-dimension-view-arcore-backend/application.tfstate"
+region       = "ap-southeast-1"
+encrypt      = true
+use_lockfile = true
+kms_key_id   = "arn:aws:kms:ap-southeast-1:511831442607:key/e231f0cc-aa40-4f7d-a102-b43e380d2b25"

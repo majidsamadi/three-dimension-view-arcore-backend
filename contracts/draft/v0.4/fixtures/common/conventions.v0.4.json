@@ -1,0 +1,230 @@
+{
+  "api_roots": {
+    "composer": "https://composer.dev.wizestay.com/api/v1",
+    "finder": "https://finder.dev.wizestay.com/api/v1",
+    "home-scanner": "https://home-scanner.dev.wizestay.com/api/v1",
+    "object-scanner": "https://object-scanner.dev.wizestay.com/api/v1"
+  },
+  "base_path_mapping": "none (API Gateway domain maps the root)",
+  "bff": {
+    "forbidden_path_segments": [
+      "internal",
+      "webhooks",
+      "webhook",
+      "oauth2",
+      "health",
+      "browser-session",
+      "web-session"
+    ],
+    "max_request_body_bytes": 2000000,
+    "max_response_body_bytes": 4000000,
+    "methods": [
+      "GET",
+      "POST",
+      "PATCH",
+      "DELETE"
+    ],
+    "path_template": "/api/v1/web-session/{app}/api/{service}{path}",
+    "request_headers_passed": [
+      "Content-Type",
+      "Idempotency-Key",
+      "If-Match",
+      "X-Admin-Reason",
+      "X-WiseStay-Purpose"
+    ],
+    "response_content_types": [
+      "application/json",
+      "application/problem+json"
+    ],
+    "response_headers_passed": [
+      "Content-Type",
+      "Retry-After",
+      "X-Request-Id",
+      "ETag"
+    ],
+    "same_origin": true,
+    "source": "IDM src/wisestay_accounts/infrastructure/web_proxy.py",
+    "stripped_browser_headers": [
+      "Cookie",
+      "Authorization"
+    ],
+    "upstream_authorization": "Bearer <central Cognito access token>"
+  },
+  "common_errors": [
+    {
+      "code": "idempotency_key_required",
+      "status": 400,
+      "when": "idem route without a valid Idempotency-Key"
+    },
+    {
+      "code": "identity_required",
+      "status": 401,
+      "when": "missing or invalid bearer"
+    },
+    {
+      "code": "identity_unavailable",
+      "status": 503,
+      "when": "JWKS or identity dependency unavailable"
+    },
+    {
+      "code": "idempotency_key_reuse",
+      "status": 409,
+      "when": "same key, different body digest"
+    }
+  ],
+  "contract": "wisestay.common.conventions",
+  "error_codes": {
+    "400": [
+      "invalid_request",
+      "idempotency_key_required"
+    ],
+    "401": [
+      "identity_required"
+    ],
+    "403": [
+      "action_denied",
+      "grant_expired",
+      "grant_revoked",
+      "export_not_available",
+      "seller_membership_unverified"
+    ],
+    "404": [
+      "not_found"
+    ],
+    "409": [
+      "version_conflict",
+      "idempotency_key_reuse",
+      "already_finalized",
+      "upload_incomplete",
+      "invalid_state"
+    ],
+    "410": [
+      "resource_withdrawn",
+      "upload_expired",
+      "query_expired"
+    ],
+    "413": [
+      "limit_exceeded"
+    ],
+    "422": [
+      "validation_failed",
+      "component_digest_mismatch",
+      "component_size_mismatch",
+      "occupied_home_publication_disabled",
+      "property_not_usable",
+      "unsupported_input",
+      "unsupported_scale"
+    ],
+    "503": [
+      "identity_unavailable",
+      "dependency_unavailable"
+    ]
+  },
+  "error_codes_closed": true,
+  "idempotency": {
+    "header": "Idempotency-Key",
+    "missing": {
+      "code": "idempotency_key_required",
+      "status": 400
+    },
+    "pattern": "^[A-Za-z0-9_-]{8,128}$",
+    "replay": "same actor, route, key and body digest replays the stored status and body",
+    "retention_hours": 24,
+    "retention_mechanism": "DynamoDB TTL",
+    "reuse": {
+      "code": "idempotency_key_reuse",
+      "status": 409,
+      "when": "same key with a different body digest"
+    }
+  },
+  "identifiers": {
+    "format": "<prefix>_<26 Crockford base32>",
+    "generator": "secrets-based monotonic",
+    "pattern": "^[a-z]{3,4}_[0-9A-HJKMNP-TV-Z]{26}$",
+    "prefixes": {
+      "avs": "availability snapshot",
+      "brn": "branch",
+      "cand": "candidate",
+      "cap": "capture",
+      "cmt": "comment",
+      "dsg": "design",
+      "grt": "grant",
+      "imp": "import",
+      "loc": "location",
+      "map": "map",
+      "mer": "merchant",
+      "obj": "object",
+      "plc": "placement",
+      "prd": "product",
+      "prj": "projection",
+      "pub": "publication",
+      "qry": "query",
+      "scn": "scene",
+      "shp": "shop",
+      "shr": "share",
+      "ugr": "use grant",
+      "upl": "upload",
+      "var": "variant",
+      "vgr": "view grant"
+    },
+    "synthetic_examples": [
+      "scn_01HZYSYNTH0000000000000001",
+      "USER-A",
+      "USER-B"
+    ],
+    "versions": "decimal strings \"1\", \"2\", ... per asset"
+  },
+  "lambda_router_prefix": "/api/v1",
+  "optimistic_concurrency": {
+    "body_field": "expected_version",
+    "composer_body_field": "expected_revision",
+    "composer_scope": "design and branch heads",
+    "delete_query_parameter": "expected_version",
+    "etag": "GET responses carry ETag: \"<record_version>\"",
+    "mismatch": {
+      "code": "version_conflict",
+      "extras": [
+        "current_version",
+        "current_revision"
+      ],
+      "status": 409
+    }
+  },
+  "pagination": {
+    "cursor": "opaque string",
+    "filtered_by_permission": true,
+    "limit_default": 20,
+    "limit_max": 50,
+    "limit_min": 1,
+    "response_shape": {
+      "items": [],
+      "next_cursor": null
+    },
+    "totals": false
+  },
+  "problem": {
+    "components_item": [
+      "component_id",
+      "state",
+      "reason"
+    ],
+    "content_type": "application/problem+json",
+    "optional_extras": [
+      "current_version",
+      "current_revision",
+      "reasons",
+      "components"
+    ],
+    "shape": {
+      "code": "<code>",
+      "request_id": "<id>",
+      "status": "<int>",
+      "title": "<fixed English title>",
+      "type": "https://wizestay.com/problems/<code>"
+    }
+  },
+  "producer": "shared (S0 transcription of plan X.1; implemented by HSB, OSB, HCB, WFB)",
+  "status": "DRAFT_SYNTHETIC_NOT_FROZEN",
+  "times": "RFC 3339 UTC with Z suffix",
+  "version": "0.4-draft"
+}

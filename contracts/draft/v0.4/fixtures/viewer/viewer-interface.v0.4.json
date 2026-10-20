@@ -1,0 +1,63 @@
+{
+  "camera_modes": [
+    "orbit",
+    "top"
+  ],
+  "contract": "wisestay.viewer.interface",
+  "counts_as_webgpu": {
+    "unsupported": false,
+    "webgl2-compatibility": false,
+    "webgpu": true
+  },
+  "describe_contract": "plain text, ≤ 600 chars, names renderer label, asset kind/version, node count, selected node, uncertainty count",
+  "describe_max_chars": 600,
+  "dispose_rule": "idempotent",
+  "events": [
+    "capability",
+    "loaded",
+    "selection",
+    "device-lost",
+    "error",
+    "disposed"
+  ],
+  "interface_version": "wisestay.viewer/1.0.0-draft",
+  "load_rule": "verifies component sha256 before parse",
+  "methods": [
+    "capability",
+    "load",
+    "setInstances",
+    "setCameraMode",
+    "orbit",
+    "zoom",
+    "focus",
+    "select",
+    "highlight",
+    "showUncertainty",
+    "describe",
+    "on",
+    "dispose"
+  ],
+  "producer": "three-dimension-view-arcore (sdk/src/viewer-interface.ts)",
+  "renderer_kinds": [
+    "webgpu",
+    "webgl2-compatibility",
+    "unsupported"
+  ],
+  "renderer_labels": {
+    "unsupported": "3D view not supported on this device yet",
+    "webgl2-compatibility": "Compatibility view (WebGL2) — not WebGPU",
+    "webgpu": "WebGPU view"
+  },
+  "status": "DRAFT_SYNTHETIC_NOT_FROZEN",
+  "uncertainty_kinds": [
+    "unobserved",
+    "estimated",
+    "unknown-scale"
+  ],
+  "version": "0.4-draft",
+  "version_negotiation": "requestedVersion with a different major -> SpatialError('UNSUPPORTED')",
+  "zoom_distance_m": {
+    "max": 10000,
+    "min": 0.05
+  }
+}

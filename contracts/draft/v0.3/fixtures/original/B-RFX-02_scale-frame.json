@@ -1,0 +1,68 @@
+{
+  "fixture_id": "B-RFX-02",
+  "kind": "independently prepared semantic/review examples; not deployed data/API schema",
+  "b_case_ids": [
+    "B-P03-04",
+    "B-P03-10",
+    "B-P03-11",
+    "B-P03-19"
+  ],
+  "reviewers_requested": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+  ],
+  "source": "Retained B v0.1 and coordinator-relayed summaries from this cycle",
+  "status": "PREPARED_NOT_EXECUTED_NOT_ACCEPTED",
+  "coordinate_convention": null,
+  "codec": null,
+  "protection_scheme": null,
+  "physical_measurement_receipts": [],
+  "examples": [
+    {
+      "example": "unknown home, known object",
+      "home_scale_claim": "unknown",
+      "object_dimensions_illustrative": [
+        1.2,
+        0.8,
+        0.75
+      ],
+      "draft_expected": "Home remains unknown; no verified-fit statement."
+    },
+    {
+      "example": "known home, unknown object",
+      "home_dimensions_illustrative": [
+        4,
+        3
+      ],
+      "object_scale_claim": "unknown",
+      "draft_expected": "Object remains unknown; nonmetric trial/refusal decision is unset."
+    },
+    {
+      "example": "seller dimensions versus independently verified dimensions",
+      "seller_declaration": "illustrative only",
+      "independent_measurement_receipt": null,
+      "draft_expected": "Do not upgrade the evidence type from a declaration or label."
+    },
+    {
+      "example": "independent session origins",
+      "frame_labels": [
+        "FRAME-A",
+        "FRAME-B"
+      ],
+      "transform": null,
+      "draft_expected": "No identity transform, synchronized timebase or tracking resume inferred."
+    },
+    {
+      "example": "fused furniture and unseen wall",
+      "component_notes": [
+        "fused-furniture",
+        "unseen-wall"
+      ],
+      "draft_expected": "No destructive deduplication; no asserted empty clearance volume."
+    }
+  ]
+}

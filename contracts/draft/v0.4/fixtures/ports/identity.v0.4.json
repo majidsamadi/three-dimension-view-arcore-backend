@@ -1,0 +1,117 @@
+{
+  "app": {
+    "blocked_on": "IDM PR merge and re-pin",
+    "default_transport": {
+      "calls_fetch": false,
+      "code": "dependency_unavailable",
+      "status": 503
+    },
+    "pin_note": "vendored APPLICATIONS map does not list the 3D apps; live WebSession cannot be constructed yet",
+    "transport": "transport(method, bffPath, {headers, body}) -> {status, headers, body}",
+    "web_session_pin": "553ac3c08973114f26271d1a751437d9203b5cd4"
+  },
+  "backend": {
+    "checks_in_order": [
+      "Authorization is 'Bearer <ascii token>' (<= 12000 chars) with exactly 3 base64url segments",
+      "JOSE header alg == RS256 and kid present",
+      "jwks.key(kid) is RSA, >= 2048-bit, e == 65537",
+      "RSASSA-PKCS1-v1_5 SHA-256 signature (stdlib rs256.py: integer pow, EMSA-PKCS1-v1_5 with SHA-256 DigestInfo, hmac.compare_digest)",
+      "claims: iss == issuer; token_use == access; client_id == client_id; exp > now - leeway; iat <= now + leeway; nbf (if present) <= now + leeway; sub non-empty string"
+    ],
+    "errors": {
+      "IdentityRequired": {
+        "code": "identity_required",
+        "status": 401
+      },
+      "IdentityUnavailable": {
+        "code": "identity_unavailable",
+        "status": 503
+      }
+    },
+    "fakes": {
+      "FakeIdentityVerifier": {
+        "Bearer token-A": "USER-A",
+        "Bearer token-B": "USER-B"
+      },
+      "StaticJwksSource": "fixed synthetic RSA-2048 test key in tests/rsa_test_key.py; tests sign with pow(m, d, n)"
+    },
+    "issuer_template": "https://cognito-idp.ap-southeast-1.amazonaws.com/<central pool id>",
+    "jwks_source": {
+      "class": "HttpJwksSource",
+      "failure": "IdentityUnavailable",
+      "redirects": false,
+      "timeout_s": 3,
+      "ttl_s": 3600,
+      "unknown_kid_refresh": "once, at most once per 60 s",
+      "url": "issuer + /.well-known/jwks.json"
+    },
+    "known_limits": [
+      "no online revocation check; tokens honoured until exp",
+      "organisation membership not in the token; merchant and seller roles come from WFB"
+    ],
+    "mapping": "RequestIdentityFacts(verified) implements IdentityFacts -> IdentityFact(CURRENT, ActorContext(user_id, application_id))",
+    "modules": [
+      "src/<pkg>/ports/identity.py",
+      "src/<pkg>/adapters/central_identity.py"
+    ],
+    "protocol": "IdentityVerifier.verify(authorization: str | None) -> VerifiedIdentity",
+    "reused_resolvers": [
+      "HomeReferenceResolver",
+      "ObjectReferenceResolver",
+      "DesignReferenceResolver",
+      "ShopScopeResolver"
+    ],
+    "terraform_variables": [
+      "central_issuer",
+      "central_client_id"
+    ],
+    "verified_identity": {
+      "application_id": "constant per backend",
+      "client_id": "token client_id (UM app client)",
+      "expires_at": "token exp",
+      "user_id": "token sub"
+    },
+    "verifier": "CentralJwtIdentityVerifier(issuer, client_id, application_id, jwks: JwksSource, clock, leeway_s=60)"
+  },
+  "callback_template": "<origin>/api/v1/web-session/<app>/callback",
+  "catalogue_rule": "each web app's CATALOGUE service tuple is exactly its own API name (Q01)",
+  "contract": "wisestay.identity.port",
+  "cookie_template": "__Host-ws-web-<app>",
+  "producer": "wisestay-user-management-backend (IDM-01 registrations); backend adapters in HSB, OSB, HCB, WFB",
+  "registrations": [
+    {
+      "api": "home-scanner",
+      "api_root": "https://home-scanner.dev.wizestay.com/api/v1",
+      "app": "home-scanner",
+      "application_id": "home-scanner",
+      "display_name": "WiseStay Home Scanner",
+      "web_origin": "https://home-scanner.wizestay.com"
+    },
+    {
+      "api": "object-scanner",
+      "api_root": "https://object-scanner.dev.wizestay.com/api/v1",
+      "app": "object-scanner",
+      "application_id": "object-scanner",
+      "display_name": "WiseStay Object Scanner",
+      "web_origin": "https://object-scanner.wizestay.com"
+    },
+    {
+      "api": "composer",
+      "api_root": "https://composer.dev.wizestay.com/api/v1",
+      "app": "composer",
+      "application_id": "composer",
+      "display_name": "WiseStay Home Composer",
+      "web_origin": "https://composer.wizestay.com"
+    },
+    {
+      "api": "finder",
+      "api_root": "https://finder.dev.wizestay.com/api/v1",
+      "app": "finder",
+      "application_id": "finder",
+      "display_name": "WiseStay Where Can I Find This",
+      "web_origin": "https://finder.wizestay.com"
+    }
+  ],
+  "status": "DRAFT_SYNTHETIC_NOT_FROZEN",
+  "version": "0.4-draft"
+}

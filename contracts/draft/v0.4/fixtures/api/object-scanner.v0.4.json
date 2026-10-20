@@ -1,0 +1,1105 @@
+{
+  "api_root": "https://object-scanner.dev.wizestay.com/api/v1",
+  "bff_service": "object-scanner",
+  "contract": "wisestay.object-scanner.api",
+  "effective_scale_claim": {
+    "effective_dimensions_m": "newest entry of the highest class present",
+    "map": {
+      "creator-measured": "reference-supported",
+      "independently-verified": "independently-verified",
+      "none": "unknown",
+      "scan-estimate": "estimated",
+      "seller-declared": "seller-declared"
+    },
+    "order": [
+      "independently-verified",
+      "creator-measured",
+      "seller-declared",
+      "scan-estimate"
+    ]
+  },
+  "example_notes": "Synthetic IDs and users only (USER-A = token-A, USER-B = token-B). request_example is {path_params, query, headers, body}; response_example is the JSON body. envelope_sha256 values of 64 zeros are placeholders for the digest of the service-written envelope bytes. 400 idempotency_key_required, 401 identity_required and 409 idempotency_key_reuse apply to every route as listed in conventions.v0.4.json.",
+  "producer": "three-dimension-object-backend",
+  "property_binding": "none (ObjectAssetReference has no property_id; no Resvanta port)",
+  "routes": [
+    {
+      "errors": [
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "missing title, unknown capture_profile or rights not attested"
+        }
+      ],
+      "expected_version": "none",
+      "id": "O01",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "A retry with the same Idempotency-Key returns the same object_id.",
+      "path": "/objects",
+      "request_example": {
+        "body": {
+          "capture_profile": "handheld-orbit",
+          "content_class": "synthetic",
+          "rights_attestation": {
+            "creator_has_rights": true,
+            "depicts_commercial_product": false
+          },
+          "title": "Synthetic unit box"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-object-0001"
+        },
+        "path_params": {},
+        "query": {}
+      },
+      "response_example": {
+        "object_id": "obj_01HZYSYNTH0000000000000001",
+        "record_version": 1,
+        "state": "draft"
+      },
+      "response_status": 201,
+      "wbs": [
+        "OSB-02.1"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "limit_exceeded",
+          "status": 413,
+          "when": "more than 10 components or a component over 209,715,200 bytes"
+        },
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "envelope draft or component list invalid (reasons[] e.g. raw_capture_not_accepted)"
+        },
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "object not visible to the caller (wrong account)"
+        }
+      ],
+      "expected_version": "none",
+      "id": "O02",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/objects/{object_id}/uploads",
+      "request_example": {
+        "body": {
+          "components": [
+            {
+              "bytes": 812,
+              "component_id": "main",
+              "media_type": "model/gltf-binary",
+              "role": "geometry",
+              "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+            }
+          ],
+          "envelope": {
+            "asset_id": "obj_01HZYSYNTH0000000000000001",
+            "audience_projection_id": null,
+            "bounds_m": {
+              "max": [
+                0.5,
+                1.0,
+                0.5
+              ],
+              "min": [
+                -0.5,
+                0.0,
+                -0.5
+              ]
+            },
+            "components": [
+              {
+                "bytes": 812,
+                "component_id": "main",
+                "media_type": "model/gltf-binary",
+                "role": "geometry",
+                "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+              }
+            ],
+            "frame": {
+              "handedness": "right",
+              "units": "metre",
+              "up": "+Y"
+            },
+            "kind": "object",
+            "producer": {
+              "app": "object-scanner",
+              "engine": "three-dimension-view-arcore",
+              "engine_version": "0.2.0"
+            },
+            "provenance": {
+              "capture_mode": "local",
+              "cloud_refinement": false,
+              "content_class": "synthetic",
+              "permission_record_id": null
+            },
+            "scale_claim": "reference-supported",
+            "schema": "wisestay.asset-envelope.v1",
+            "unobserved_regions": [
+              {
+                "bounds_m": {
+                  "max": [
+                    0.5,
+                    1.0,
+                    0.5
+                  ],
+                  "min": [
+                    0.25,
+                    0.75,
+                    0.25
+                  ]
+                },
+                "label": "Not observed",
+                "region_id": "r1"
+              }
+            ],
+            "version": null
+          }
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-upload-0001"
+        },
+        "path_params": {
+          "object_id": "obj_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "components": [
+          {
+            "component_id": "main",
+            "put_headers": {
+              "content-length": "812",
+              "x-amz-checksum-sha256": "wY8ukmDivEVnx9l9E5fzJAaUoMXxS+6w1p6FtXbaCxo="
+            },
+            "put_url": "fake-s3://synthetic-object-scanner-assets/staging/upl_01HZYSYNTH0000000000000001/main?exp=1792455300&sig=SYNTHETIC",
+            "state": "pending",
+            "url_expires_at": "2026-10-20T00:15:00Z"
+          }
+        ],
+        "expires_at": "2026-10-27T00:00:00Z",
+        "object_id": "obj_01HZYSYNTH0000000000000001",
+        "record_version": 1,
+        "state": "open",
+        "upload_id": "upl_01HZYSYNTH0000000000000001"
+      },
+      "response_status": 201,
+      "wbs": [
+        "OSB-02.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "upload not visible to the caller"
+        },
+        {
+          "code": "upload_expired",
+          "status": 410,
+          "when": "upload session older than 7 days"
+        }
+      ],
+      "expected_version": "none",
+      "id": "O03",
+      "idempotency_key": "none",
+      "method": "GET",
+      "notes": "No URLs. Component state pending|confirmed|failed with reason digest_mismatch|size_mismatch|null, reconciled by storage HEAD.",
+      "path": "/uploads/{upload_id}",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "upload_id": "upl_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "components": [
+          {
+            "component_id": "main",
+            "reason": null,
+            "state": "confirmed"
+          }
+        ],
+        "expires_at": "2026-10-27T00:00:00Z",
+        "object_id": "obj_01HZYSYNTH0000000000000001",
+        "record_version": 1,
+        "state": "open",
+        "upload_id": "upl_01HZYSYNTH0000000000000001"
+      },
+      "response_status": 200,
+      "wbs": [
+        "OSB-02.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "invalid_state",
+          "status": 409,
+          "when": "upload finalized or cancelled"
+        },
+        {
+          "code": "upload_expired",
+          "status": 410,
+          "when": "upload session expired"
+        }
+      ],
+      "expected_version": "none",
+      "id": "O04",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "Default component_ids: every non-confirmed component. Never returns URLs for confirmed components.",
+      "path": "/uploads/{upload_id}/component-urls",
+      "request_example": {
+        "body": {
+          "component_ids": [
+            "main"
+          ]
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-urls-0001"
+        },
+        "path_params": {
+          "upload_id": "upl_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "components": [
+          {
+            "component_id": "main",
+            "put_headers": {
+              "content-length": "812",
+              "x-amz-checksum-sha256": "wY8ukmDivEVnx9l9E5fzJAaUoMXxS+6w1p6FtXbaCxo="
+            },
+            "put_url": "fake-s3://synthetic-object-scanner-assets/staging/upl_01HZYSYNTH0000000000000001/main?exp=1792455300&sig=SYNTHETIC",
+            "url_expires_at": "2026-10-20T00:15:00Z"
+          }
+        ]
+      },
+      "response_status": 200,
+      "wbs": [
+        "OSB-02.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "invalid_state",
+          "status": 409,
+          "when": "upload already finalized"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs from the record version"
+        }
+      ],
+      "expected_version": "body",
+      "id": "O05",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "Repeating cancel on a cancelled upload is a no-op 200.",
+      "path": "/uploads/{upload_id}/cancel",
+      "request_example": {
+        "body": {
+          "expected_version": 1
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-cancel-0001"
+        },
+        "path_params": {
+          "upload_id": "upl_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "state": "cancelled"
+      },
+      "response_status": 200,
+      "wbs": [
+        "OSB-02.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "upload_incomplete",
+          "status": 409,
+          "when": "a component is not confirmed (+components)"
+        },
+        {
+          "code": "component_digest_mismatch",
+          "status": 422,
+          "when": "stored bytes digest differs (+components); no version created"
+        },
+        {
+          "code": "component_size_mismatch",
+          "status": 422,
+          "when": "stored size differs (+components); no version created"
+        },
+        {
+          "code": "already_finalized",
+          "status": 409,
+          "when": "new Idempotency-Key after a successful finalize (+object_id, version)"
+        },
+        {
+          "code": "upload_expired",
+          "status": 410,
+          "when": "upload session expired"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs from the record version"
+        }
+      ],
+      "expected_version": "body",
+      "id": "O06",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "state is validated|quarantined; quarantined carries validation.reasons[] (X.2.1 GLB reason codes). The first finalize creates exactly one immutable version. envelope_sha256 example value is a placeholder.",
+      "path": "/uploads/{upload_id}/finalize",
+      "request_example": {
+        "body": {
+          "expected_version": 1
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-finalize-0001"
+        },
+        "path_params": {
+          "upload_id": "upl_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "envelope_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "object_id": "obj_01HZYSYNTH0000000000000001",
+        "state": "validated",
+        "validation": {
+          "reasons": []
+        },
+        "version": "1"
+      },
+      "response_status": 201,
+      "wbs": [
+        "OSB-02.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "non-finite or non-positive dimension, any dimension > 20 m, or independently-verified without verification_record_id"
+        },
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the creator"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "O07",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "Append-only: a correction is a new entry and never rewrites an earlier one.",
+      "path": "/objects/{object_id}/versions/{version}/dimension-evidence",
+      "request_example": {
+        "body": {
+          "class": "creator-measured",
+          "dimensions_m": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "expected_version": 2,
+          "orientation": {
+            "front": "-Z",
+            "up": "+Y"
+          },
+          "reference_point": "bottom-centre",
+          "uncertainty_m": [
+            0.01,
+            0.01,
+            0.01
+          ],
+          "verification_record_id": null
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-evidence-0001"
+        },
+        "path_params": {
+          "object_id": "obj_01HZYSYNTH0000000000000001",
+          "version": "1"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "class": "creator-measured",
+        "dimensions_m": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "effective_scale_claim": "reference-supported",
+        "evidence_id": "evd_01HZYSYNTH0000000000000001",
+        "orientation": {
+          "front": "-Z",
+          "up": "+Y"
+        },
+        "reference_point": "bottom-centre",
+        "uncertainty_m": [
+          0.01,
+          0.01,
+          0.01
+        ],
+        "verification_record_id": null
+      },
+      "response_status": 201,
+      "wbs": [
+        "OSB-04.1",
+        "OSB-04.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "missing merchant/product/variant id"
+        },
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the creator"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "O08",
+      "idempotency_key": "required",
+      "method": "POST",
+      "notes": "A second link to a different product_id marks both links ambiguous. Links are never merged.",
+      "path": "/objects/{object_id}/versions/{version}/variants",
+      "request_example": {
+        "body": {
+          "attributes": {
+            "brand": "Synthetic",
+            "color": null,
+            "model": "Box-1",
+            "package": null,
+            "size": "1 m"
+          },
+          "expected_version": 3,
+          "gtin": "00000000000017",
+          "merchant_id": "mer_01HZYSYNTH0000000000000001",
+          "product_id": "prd_01HZYSYNTH0000000000000001",
+          "variant_id": "var_01HZYSYNTH0000000000000001"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-variant-0001"
+        },
+        "path_params": {
+          "object_id": "obj_01HZYSYNTH0000000000000001",
+          "version": "1"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "link_status": "declared",
+        "variant_link_id": "vln_01HZYSYNTH0000000000000001"
+      },
+      "response_status": 201,
+      "wbs": [
+        "OSB-04.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the creator"
+        },
+        {
+          "code": "invalid_state",
+          "status": 409,
+          "when": "quarantined or transition not allowed"
+        }
+      ],
+      "expected_version": "body",
+      "id": "O09",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/objects/{object_id}/versions/{version}/review",
+      "request_example": {
+        "body": {
+          "decision": "approved",
+          "expected_version": 4
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-oreview-0001"
+        },
+        "path_params": {
+          "object_id": "obj_01HZYSYNTH0000000000000001",
+          "version": "1"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "review_state": "approved"
+      },
+      "response_status": 200,
+      "wbs": [
+        "OSB-03.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "export_not_available",
+          "status": 403,
+          "when": "allowed_use contains export (Q10)"
+        },
+        {
+          "code": "seller_membership_unverified",
+          "status": 403,
+          "when": "seller_published and membership not current"
+        },
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the creator"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "O10",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/objects/{object_id}/publication",
+      "request_example": {
+        "body": {
+          "allowed_use": [
+            "view",
+            "place"
+          ],
+          "audience": "named_share",
+          "expected_version": 5,
+          "merchant_id": null,
+          "version": "1"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-opublish-0001"
+        },
+        "path_params": {
+          "object_id": "obj_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "allowed_use": [
+          "view",
+          "place"
+        ],
+        "audience": "named_share",
+        "published_version": "1",
+        "record_version": 6,
+        "state": "published"
+      },
+      "response_status": 200,
+      "wbs": [
+        "OSB-05.1",
+        "OSB-05.2"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the creator"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "body",
+      "id": "O11",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/objects/{object_id}/withdrawal",
+      "request_example": {
+        "body": {
+          "expected_version": 6,
+          "reason": "synthetic withdrawal"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-owithdraw-0001"
+        },
+        "path_params": {
+          "object_id": "obj_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "state": "withdrawn"
+      },
+      "response_status": 200,
+      "wbs": [
+        "OSB-05.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "private or not visible (non-disclosing)"
+        },
+        {
+          "code": "resource_withdrawn",
+          "status": 410,
+          "when": "object withdrawn"
+        }
+      ],
+      "expected_version": "none",
+      "id": "O12",
+      "idempotency_key": "none",
+      "method": "GET",
+      "notes": "Visible to the creator, explicit share grantees, or any signed-in user when seller_published.",
+      "path": "/objects/{object_id}",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "object_id": "obj_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "allowed_use": [
+          "view",
+          "place"
+        ],
+        "audience": "named_share",
+        "object_id": "obj_01HZYSYNTH0000000000000001",
+        "published_version": "1",
+        "state": "published",
+        "title": "Synthetic unit box",
+        "versions": [
+          {
+            "effective_scale_claim": "reference-supported",
+            "review_state": "approved",
+            "state": "validated",
+            "version": "1"
+          }
+        ]
+      },
+      "response_status": 200,
+      "wbs": [
+        "OSB-05.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "not visible"
+        },
+        {
+          "code": "resource_withdrawn",
+          "status": 410,
+          "when": "object withdrawn"
+        }
+      ],
+      "expected_version": "none",
+      "id": "O13",
+      "idempotency_key": "none",
+      "method": "GET",
+      "path": "/objects/{object_id}/versions/{version}",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-B"
+        },
+        "path_params": {
+          "object_id": "obj_01HZYSYNTH0000000000000001",
+          "version": "1"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "allowed_use": [
+          "view",
+          "place"
+        ],
+        "caller_allowed_use": [
+          "view",
+          "place"
+        ],
+        "dimension_evidence": [
+          {
+            "class": "creator-measured",
+            "dimensions_m": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "evidence_id": "evd_01HZYSYNTH0000000000000001",
+            "orientation": {
+              "front": "-Z",
+              "up": "+Y"
+            },
+            "recorded_at": "2026-10-20T00:00:00Z",
+            "recorded_by": "USER-A",
+            "reference_point": "bottom-centre",
+            "uncertainty_m": [
+              0.01,
+              0.01,
+              0.01
+            ],
+            "verification_record_id": null
+          }
+        ],
+        "effective_dimensions_m": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "effective_scale_claim": "reference-supported",
+        "envelope": {
+          "asset_id": "obj_01HZYSYNTH0000000000000001",
+          "audience_projection_id": null,
+          "bounds_m": {
+            "max": [
+              0.5,
+              1.0,
+              0.5
+            ],
+            "min": [
+              -0.5,
+              0.0,
+              -0.5
+            ]
+          },
+          "components": [
+            {
+              "bytes": 812,
+              "component_id": "main",
+              "media_type": "model/gltf-binary",
+              "role": "geometry",
+              "sha256": "c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a"
+            }
+          ],
+          "frame": {
+            "handedness": "right",
+            "units": "metre",
+            "up": "+Y"
+          },
+          "kind": "object",
+          "producer": {
+            "app": "object-scanner",
+            "engine": "three-dimension-view-arcore",
+            "engine_version": "0.2.0"
+          },
+          "provenance": {
+            "capture_mode": "local",
+            "cloud_refinement": false,
+            "content_class": "synthetic",
+            "permission_record_id": null
+          },
+          "scale_claim": "reference-supported",
+          "schema": "wisestay.asset-envelope.v1",
+          "unobserved_regions": [
+            {
+              "bounds_m": {
+                "max": [
+                  0.5,
+                  1.0,
+                  0.5
+                ],
+                "min": [
+                  0.25,
+                  0.75,
+                  0.25
+                ]
+              },
+              "label": "Not observed",
+              "region_id": "r1"
+            }
+          ],
+          "version": "1"
+        },
+        "object_id": "obj_01HZYSYNTH0000000000000001",
+        "state": "validated",
+        "variants": [
+          {
+            "link_status": "declared",
+            "merchant_id": "mer_01HZYSYNTH0000000000000001",
+            "product_id": "prd_01HZYSYNTH0000000000000001",
+            "variant_id": "var_01HZYSYNTH0000000000000001",
+            "variant_link_id": "vln_01HZYSYNTH0000000000000001"
+          }
+        ],
+        "version": "1"
+      },
+      "response_status": 200,
+      "wbs": [
+        "OSB-04.4",
+        "OSB-05.3"
+      ]
+    },
+    {
+      "errors": [],
+      "expected_version": "none",
+      "id": "O14",
+      "idempotency_key": "none",
+      "method": "GET",
+      "notes": "The caller's library only.",
+      "path": "/objects",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {},
+        "query": {
+          "limit": 20
+        }
+      },
+      "response_example": {
+        "items": [
+          {
+            "object_id": "obj_01HZYSYNTH0000000000000001",
+            "published_version": "1",
+            "state": "published",
+            "title": "Synthetic unit box"
+          }
+        ],
+        "next_cursor": null
+      },
+      "response_status": 200,
+      "wbs": [
+        "OSB-05.3"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the creator"
+        },
+        {
+          "code": "export_not_available",
+          "status": 403,
+          "when": "allowed_use contains export"
+        },
+        {
+          "code": "validation_failed",
+          "status": 422,
+          "when": "expires_at more than 90 days ahead"
+        }
+      ],
+      "expected_version": "none",
+      "id": "O15",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/objects/{object_id}/shares",
+      "request_example": {
+        "body": {
+          "allowed_use": [
+            "view",
+            "place"
+          ],
+          "expires_at": "2026-11-19T00:00:00Z",
+          "grantee_user_id": "USER-B"
+        },
+        "headers": {
+          "Authorization": "Bearer token-A",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-oshare-0001"
+        },
+        "path_params": {
+          "object_id": "obj_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "share_id": "shr_01HZYSYNTH0000000000000001",
+        "state": "active"
+      },
+      "response_status": 201,
+      "wbs": [
+        "OSB-05.1"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "action_denied",
+          "status": 403,
+          "when": "caller is not the creator"
+        },
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "share not found"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "expected_version differs"
+        }
+      ],
+      "expected_version": "query",
+      "id": "O16",
+      "idempotency_key": "none",
+      "method": "DELETE",
+      "path": "/objects/{object_id}/shares/{share_id}",
+      "request_example": {
+        "body": null,
+        "headers": {
+          "Authorization": "Bearer token-A"
+        },
+        "path_params": {
+          "object_id": "obj_01HZYSYNTH0000000000000001",
+          "share_id": "shr_01HZYSYNTH0000000000000001"
+        },
+        "query": {
+          "expected_version": 1
+        }
+      },
+      "response_example": {
+        "state": "revoked"
+      },
+      "response_status": 200,
+      "wbs": [
+        "OSB-06.4"
+      ]
+    },
+    {
+      "errors": [
+        {
+          "code": "export_not_available",
+          "status": 403,
+          "when": "action export (always)"
+        },
+        {
+          "code": "grant_expired",
+          "status": 403,
+          "when": "share expired"
+        },
+        {
+          "code": "not_found",
+          "status": 404,
+          "when": "not visible"
+        },
+        {
+          "code": "resource_withdrawn",
+          "status": 410,
+          "when": "object withdrawn"
+        },
+        {
+          "code": "version_conflict",
+          "status": 409,
+          "when": "version not published"
+        }
+      ],
+      "expected_version": "none",
+      "id": "O17",
+      "idempotency_key": "required",
+      "method": "POST",
+      "path": "/objects/{object_id}/use-grants",
+      "request_example": {
+        "body": {
+          "action": "place",
+          "version": "1"
+        },
+        "headers": {
+          "Authorization": "Bearer token-B",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "idem-use-0001"
+        },
+        "path_params": {
+          "object_id": "obj_01HZYSYNTH0000000000000001"
+        },
+        "query": {}
+      },
+      "response_example": {
+        "action": "place",
+        "commercial_outcome": "allowed_no_commercial_policy",
+        "components": [
+          {
+            "component_id": "main",
+            "get_url": "fake-s3://synthetic-object-scanner-assets/versions/c18f2e9260e2bc4567c7d97d1397f3240694a0c5f14beeb0d69e85b576da0b1a?exp=1792454700&sig=SYNTHETIC"
+          }
+        ],
+        "expires_at": "2026-10-20T00:05:00Z",
+        "use_grant_id": "ugr_01HZYSYNTH0000000000000001",
+        "version": "1"
+      },
+      "response_status": 201,
+      "wbs": [
+        "OSB-06.1",
+        "OSB-06.2"
+      ]
+    }
+  ],
+  "seller_membership": {
+    "live_adapter": "WFB F02 GET /merchants/{merchant_id}/members/me with the caller's bearer",
+    "port": "SellerMembershipPort.current_membership(user_id, merchant_id) -> MembershipFact(status: current|none|unavailable, role)",
+    "unconfigured": "unavailable -> 403 seller_membership_unverified"
+  },
+  "status": "DRAFT_SYNTHETIC_NOT_FROZEN",
+  "version": "0.4-draft"
+}
