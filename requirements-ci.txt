@@ -1,0 +1,5 @@
+# Test-only dependency of tests/test_workflow.py (YAML parse of .github/workflows/ci.yml).
+# Installed by the CI boundary job (ubuntu-24.04, CPython 3.11, x86_64) with --require-hashes.
+# Never packaged into the Lambda (tools/build_lambda.py ships src/ only).
+pyyaml==6.0.3 \
+    --hash=sha256:b8bb0864c5a28024fac8a632c443c87c5aa6f215c0b126c449ae1a150412f31d
